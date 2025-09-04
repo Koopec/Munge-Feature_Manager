@@ -53,6 +53,12 @@ public class Server {
         private String username;
         private PrintWriter logWriter;
 
+        public static final String ANSI_RESET = "\u001B[0m";
+        public static final String ANSI_YELLOW = "\u001B[33m";
+        public static final String ANSI_RED = "\u001B[41m";
+        public static final String ANSI_BLUE = "\u001B[44m";
+        public static final String ANSI_GREEN = "\u001B[42m";
+
         public ClientHandler(Socket socket, PrintWriter logWriter) {
             this.clientSocket = socket;
             this.logWriter = logWriter;
@@ -77,14 +83,22 @@ public class Server {
                 out.println("Welcome to the chat, " + username + "!");
 
                 out.println("What color do you want your outgoing messages to be?");
-                // TODO
+                String color = in.readLine(); 
+                String textcolour = ANSI_RESET;
+                switch (color){
+                    case "green" -> textcolour = ANSI_GREEN;
+                    case "red" -> textcolour = ANSI_RED;
+                    case "blue" -> textcolour = ANSI_BLUE;
+                    case "yellow" -> textcolour = ANSI_YELLOW;
+                }
                 out.println("Type your message:");
 
                 String inputLine;
                 while ((inputLine = in.readLine()) != null) {
-                    System.out.println("[" + username + "]: " + inputLine);
-                    broadcast("[" + username + "]: " + inputLine, this);
-                    logMessage(logWriter, "[" + username + "]: " + inputLine);
+                    String message = "[" + username + "]: " + textcolour + inputLine + ANSI_RESET;
+                    System.out.println(message);
+                    broadcast(message, this);
+                    logMessage(logWriter,"[" + username + "]: " + inputLine);
                 }
 
                 clients.remove(this);
