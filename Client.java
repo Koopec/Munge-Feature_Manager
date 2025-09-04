@@ -1,11 +1,16 @@
 import java.io.*;
 import java.net.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Scanner;
 
 public class Client {
 
     public static void main(String[] args) {
         try {
+            String timestamp = new SimpleDateFormat("HHmmssddMMyyyy").format(new Date());
+            String logFileName = "client_" + timestamp + ".log";
+            PrintWriter logWriter = new PrintWriter(new FileWriter(logFileName, true));
             Socket socket = new Socket("localhost", 1234);
             System.out.println("Connected to the chat server!");
 
@@ -17,6 +22,7 @@ public class Client {
                     String serverResponse;
                     while ((serverResponse = in.readLine()) != null) {
                         System.out.println(serverResponse);
+                        logMessage(logWriter, serverResponse);
                     }
                 } catch (IOException e) {
                     System.out.println(e);
@@ -33,5 +39,10 @@ public class Client {
         } catch (IOException e) {
             System.out.println(e);
         }
+    }
+
+    private static void logMessage(PrintWriter logWriter, String message) {
+        logWriter.println(message);
+        logWriter.flush();
     }
 }

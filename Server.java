@@ -8,8 +8,9 @@ public class Server {
 
     public static void main(String[] args) {
         try {
+            PrintWriter logWriter = new PrintWriter(new FileWriter("server.log", true));
             ServerSocket serverSocket = new ServerSocket(1234);
-            System.out.println("Server is running and waiting for connections...");
+            System.out.println("Server is running and waiting for connections ...");
 
             new Thread(() -> {
                 Scanner scanner = new Scanner(System.in);
@@ -23,7 +24,7 @@ public class Server {
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("New client connected: " + clientSocket);
 
-                ClientHandler clientHandler = new ClientHandler(clientSocket);
+                ClientHandler clientHandler = new ClientHandler(clientSocket, logWriter);
                 clients.add(clientHandler);
                 new Thread(clientHandler).start();
             }
@@ -40,14 +41,21 @@ public class Server {
         }
     }
 
+    private static void logMessage(PrintWriter logWriter, String message) {
+        logWriter.println(message);
+        logWriter.flush();
+    }
+
     private static class ClientHandler implements Runnable {
         private Socket clientSocket;
         private PrintWriter out;
         private BufferedReader in;
         private String username;
+        private PrintWriter logWriter;
 
-        public ClientHandler(Socket socket) {
+        public ClientHandler(Socket socket, PrintWriter logWriter) {
             this.clientSocket = socket;
+            this.logWriter = logWriter;
 
             try {
                 out = new PrintWriter(clientSocket.getOutputStream(), true);
@@ -69,14 +77,14 @@ public class Server {
                 out.println("Welcome to the chat, " + username + "!");
 
                 out.println("What color do you want your outgoing messages to be?");
-                
-
-                out.println("Type Your Message");
+                // TODO
+                out.println("Type your message:");
 
                 String inputLine;
                 while ((inputLine = in.readLine()) != null) {
                     System.out.println("[" + username + "]: " + inputLine);
                     broadcast("[" + username + "]: " + inputLine, this);
+                    logMessage(logWriter, "[" + username + "]: " + inputLine);
                 }
 
                 clients.remove(this);
