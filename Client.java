@@ -1,23 +1,37 @@
 import java.io.*;
-import java.lang.*;
 import java.net.*;
+import java.util.Scanner;
 
-class Client {
-   public static void main(String args[]) {
-      try {
-         Socket skt = new Socket("localhost", 1234);
-         BufferedReader in = new BufferedReader(new
-            InputStreamReader(skt.getInputStream()));
-         System.out.print("Received string: '");
+public class Client {
 
-         while (!in.ready()) {}
-         System.out.println(in.readLine()); // Read one line and output it
+    public static void main(String[] args) {
+        try {
+            Socket socket = new Socket("localhost", 1234);
+            System.out.println("Connected to the chat server!");
 
-         System.out.print("'\n");
-         in.close();
-      }
-      catch(Exception e) {
-         System.out.print("Whoops! It didn't work!\n");
-      }
-   }
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+            new Thread(() -> {
+                try {
+                    String serverResponse;
+                    while ((serverResponse = in.readLine()) != null) {
+                        System.out.println(serverResponse);
+                    }
+                } catch (IOException e) {
+                    System.out.println(e);
+                }
+            }).start();
+
+            Scanner scanner = new Scanner(System.in);
+            String userInput;
+            while (true) {
+                userInput = scanner.nextLine();
+                out.println(userInput);
+            }
+           
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+    }
 }
