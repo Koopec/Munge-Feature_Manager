@@ -73,17 +73,22 @@ public class Server {
 
         @Override
         public void run() {
+            Encryption enc = new Encryption();
             try {
-                out.println("Send your special message:");
-                while(!in.readLine().equals("Software Product Lines")) {}
+                sendMessage("Send your special message:");
 
-                out.println("Enter your username:");
-                username = in.readLine();
+                String magic = "Software Product Lines";
+
+                while(!receiveMessage().equals(magic)) {}
+
+                sendMessage("Enter your username:");
+
+                username = receiveMessage();
                 System.out.println("User " + username + " connected.");
-                out.println("Welcome to the chat, " + username + "!");
+                sendMessage("Welcome to the chat, " + username + "!");
 
-                out.println("What color do you want your outgoing messages to be?");
-                String color = in.readLine(); 
+                sendMessage("What color do you want your outgoing messages to be?");
+                String color = receiveMessage(); 
                 String textcolour = ANSI_RESET;
                 switch (color){
                     case "green" -> textcolour = ANSI_GREEN;
@@ -91,10 +96,10 @@ public class Server {
                     case "blue" -> textcolour = ANSI_BLUE;
                     case "yellow" -> textcolour = ANSI_YELLOW;
                 }
-                out.println("Type your message:");
+                sendMessage("Type your message:");
 
                 String inputLine;
-                while ((inputLine = in.readLine()) != null) {
+                while ((inputLine = receiveMessage()) != null) {
                     String message = "[" + username + "]: " + textcolour + inputLine + ANSI_RESET;
                     System.out.println(message);
                     broadcast(message, this);
@@ -103,8 +108,6 @@ public class Server {
 
                 clients.remove(this);
                 System.out.println("User " + username + " disconnected.");
-            } catch (IOException e) {
-                System.out.println(e);
             } finally {
                 try {
                     in.close();
@@ -117,7 +120,19 @@ public class Server {
         }
 
         public void sendMessage(String message) {
-            out.println(message);
+            Encryption enc = new Encryption();
+            out.println(enc.rotRev(message));
+        }
+
+        public String receiveMessage(){
+            String msg ="";
+            try {
+                Encryption enc = new Encryption();
+                msg = enc.unrotRev(in.readLine());
+            } catch (IOException e) {
+                System.out.println(e);
+            }
+            return msg;
         }
     }
 }
