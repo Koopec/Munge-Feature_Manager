@@ -19,19 +19,10 @@ public class Client{
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             new Thread(() -> {
-                try {
                     String serverResponse;
-                    while ((serverResponse = in.readLine()) != null) {
-<<<<<<< Updated upstream
+                    while ((serverResponse = receiveMessage()) != null) {
                         System.out.println(serverResponse);
-                        logMessage(logWriter, serverResponse);
-=======
-                        System.out.println(enc.unrotRev(serverResponse));
->>>>>>> Stashed changes
                     }
-                } catch (IOException e) {
-                    System.out.println(e);
-                }
             }).start();
 
             Scanner scanner = new Scanner(System.in);
@@ -47,15 +38,18 @@ public class Client{
             System.out.println(e);
         }
     }
-<<<<<<< Updated upstream
 
-    private static void logMessage(PrintWriter logWriter, String message) {
-        logWriter.println(message);
-        logWriter.flush();
-=======
-        public static void sendMessage(String message) {
-        Encryption enc = new Encryption();
+    private static void sendMessage(String message) {
         out.println(enc.rotRev(message));
->>>>>>> Stashed changes
+    }
+
+    private static String receiveMessage(){
+        String msg ="";
+        try {
+            msg = enc.unrotRev(in.readLine());
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+        return msg;
     }
 }

@@ -33,7 +33,7 @@ public class Server {
         }
     }
 
-    public static void broadcast(String message, ClientHandler sender) {
+    private static void broadcast(String message, ClientHandler sender) {
         for (ClientHandler client : clients) {
             if (client != sender) {
                 client.sendMessage(message);
@@ -52,6 +52,7 @@ public class Server {
         private BufferedReader in;
         private String username;
         private PrintWriter logWriter;
+        private Encryption enc = new Encryption();
 
         public static final String ANSI_RESET = "\u001B[0m";
         public static final String ANSI_YELLOW = "\u001B[33m";
@@ -73,7 +74,6 @@ public class Server {
 
         @Override
         public void run() {
-            Encryption enc = new Encryption();
             try {
                 sendMessage("Send your special message:");
 
@@ -119,15 +119,13 @@ public class Server {
             }
         }
 
-        public void sendMessage(String message) {
-            Encryption enc = new Encryption();
+        private void sendMessage(String message) {
             out.println(enc.rotRev(message));
         }
 
-        public String receiveMessage(){
+        private String receiveMessage(){
             String msg ="";
             try {
-                Encryption enc = new Encryption();
                 msg = enc.unrotRev(in.readLine());
             } catch (IOException e) {
                 System.out.println(e);
