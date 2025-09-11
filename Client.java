@@ -4,10 +4,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Scanner;
 
-public class Client{
+public class Client {
     static Encryption enc = new Encryption();
     static PrintWriter out;
     static BufferedReader in;
+
     public static void main(String[] args) {
         try {
             String timestamp = new SimpleDateFormat("HHmmssddMMyyyy").format(new Date());
@@ -19,11 +20,12 @@ public class Client{
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             new Thread(() -> {
-                    String serverResponse;
-                    while ((serverResponse = receiveMessage()) != null) {
-                        System.out.println(serverResponse);
-                        logMessage(logWriter, serverResponse);
-                    }
+                String serverResponse;
+                while ((serverResponse = receiveMessage()) != null) {
+                    System.out.println(serverResponse);
+                    String cleanResponse = serverResponse.replaceAll("\u001B\\[[;\\d]*m", "");
+                    logMessage(logWriter, cleanResponse);
+                }
             }).start();
 
             Scanner scanner = new Scanner(System.in);
@@ -33,7 +35,7 @@ public class Client{
                 userInput = scanner.nextLine();
                 sendMessage(userInput);
             }
-           
+
         } catch (IOException e) {
             System.out.println(e);
         }
@@ -44,7 +46,7 @@ public class Client{
     }
 
     private static String receiveMessage() {
-        String msg ="";
+        String msg = "";
         try {
             msg = enc.unrotRev(in.readLine());
         } catch (IOException e) {
