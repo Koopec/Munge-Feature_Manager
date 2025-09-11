@@ -123,7 +123,7 @@ public class Server {
             out.println(enc.rotRev(message));
         }
 
-        private String receiveMessage(){
+        private String receiveMessage() {
             String msg ="";
             try {
                 msg = enc.unrotRev(in.readLine());

@@ -22,6 +22,7 @@ public class Client{
                     String serverResponse;
                     while ((serverResponse = receiveMessage()) != null) {
                         System.out.println(serverResponse);
+                        logMessage(logWriter, serverResponse);
                     }
             }).start();
 
@@ -30,7 +31,6 @@ public class Client{
 
             while (true) {
                 userInput = scanner.nextLine();
-
                 sendMessage(userInput);
             }
            
@@ -43,7 +43,7 @@ public class Client{
         out.println(enc.rotRev(message));
     }
 
-    private static String receiveMessage(){
+    private static String receiveMessage() {
         String msg ="";
         try {
             msg = enc.unrotRev(in.readLine());
@@ -51,5 +51,10 @@ public class Client{
             System.out.println(e);
         }
         return msg;
+    }
+
+    private static void logMessage(PrintWriter logWriter, String message) {
+        logWriter.println(message);
+        logWriter.flush();
     }
 }
