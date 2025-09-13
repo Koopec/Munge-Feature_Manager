@@ -12,11 +12,14 @@ public class Server {
             ServerSocket serverSocket = new ServerSocket(1234);
             System.out.println("Server is running and waiting for connections ...");
 
-            new Thread(() -> {
-                Scanner scanner = new Scanner(System.in);
-                while (true) {
-                    String serverMessage = scanner.nextLine();
-                    broadcast("[Server]: " + serverMessage, null);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Scanner scanner = new Scanner(System.in);
+                    while (true) {
+                        String serverMessage = scanner.nextLine();
+                        broadcast("[Server]: " + serverMessage, null);
+                    }
                 }
             }).start();
 

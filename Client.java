@@ -19,12 +19,15 @@ public class Client {
 
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            new Thread(() -> {
-                String serverResponse;
-                while ((serverResponse = receiveMessage()) != null) {
-                    System.out.println(serverResponse);
-                    String cleanResponse = serverResponse.replaceAll("\u001B\\[[;\\d]*m", "");
-                    logMessage(logWriter, cleanResponse);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    String serverResponse;
+                    while ((serverResponse = receiveMessage()) != null) {
+                        System.out.println(serverResponse);
+                        String cleanResponse = serverResponse.replaceAll("\u001B\\[[;\\d]*m", "");
+                        logMessage(logWriter, cleanResponse);
+                    }
                 }
             }).start();
 
