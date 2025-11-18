@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<configuration>
+	<feature manual="selected" name="HelloWorld"/>
+	<feature manual="selected"  name="Feature"/>
+	<feature manual="selected" name="Wonderful"/>
+	<feature manual="unselected" name="Beautiful"/>
+	<feature manual="unselected" name="World"/>
+</configuration>
