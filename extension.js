@@ -2,6 +2,9 @@
 // Import the module and reference it with the alias vscode in your code below
 const vscode = require('vscode');
 const xml2js = require('xml2js');
+const path = require('path');
+const fs = require('fs');
+const { exec } = require('child_process');
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 
@@ -33,14 +36,37 @@ function activate(context) {
 
 		parser.parseStringPromise(xml)
 			.then(result => {
-
 				const features = result.configuration.feature;
-
 				const selectedFeatures = features.filter(feature => feature.$.manual === 'selected');
+				const featureNames = selectedFeatures.map(feature => feature.$.name);
 
-				selectedFeatures.forEach(feature => {
-					console.log(feature.$.name);
-				});
+				if (featureNames.length > 0) {
+					const currentDirectory = vscode.workspace.workspaceFolders[0].uri.fsPath
+
+					fs.readdir(currentDirectory, (error, files) => {
+						if (error) {
+							console.error(`${error.message}`);
+							return;
+						}
+
+						const javaFiles = files.filter(file => file.endsWith('.java'));
+						if (javaFiles.length > 0) {
+							const command = `java Munge -D${featureNames.join(' -D')} ${javaFiles.join(' ')}`
+
+							exec(command, (error, stdout, stderr) => {
+								if (error) {
+									console.error(`${error.message}`);
+									return;
+								}
+								if (stderr) {
+									console.error(`${stderr}`);
+									return;
+								}
+								console.log(`${stdout}`);
+							});
+						}
+					});
+				}
 			})
 			.catch(err => {
 				console.error(err);
