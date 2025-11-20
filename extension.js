@@ -2,7 +2,6 @@
 // Import the module and reference it with the alias vscode in your code below
 const vscode = require('vscode');
 const xml2js = require('xml2js');
-const path = require('path');
 const fs = require('fs');
 const { exec } = require('child_process');
 // This method is called when your extension is activated
