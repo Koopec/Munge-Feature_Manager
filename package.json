@@ -16,12 +16,20 @@
       {
         "command": "munge-feature-manager.compileWithMunge",
         "title": "Compile with Munge"
+      },
+      {
+        "command": "munge-feature-manager.createVisualization",
+        "title": "Create visualization"
       }
     ],
     "keybindings": [
       {
         "command": "munge-feature-manager.compileWithMunge",
         "key": "ctrl+shift+m"
+      },
+      {
+        "command": "munge-feature-manager.createVisualization",
+        "key": "ctrl+shift+d"
       }
     ]
   },
