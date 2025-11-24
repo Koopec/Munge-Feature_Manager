@@ -1,12 +1,12 @@
-import fs from "fs";
-import { parseStringPromise } from "xml2js";
+const fs = require("fs");
+const { parseStringPromise } = require("xml2js");
 
-export async function loadXML(filePath) {
+async function loadXML(filePath) {
   const data = fs.readFileSync(filePath, "utf-8");
   return await parseStringPromise(data);
 }
 
-export function explodeArrayObjects(arr) {
+function explodeArrayObjects(arr) {
   const result = [];
 
   arr.forEach(obj => {
@@ -26,7 +26,7 @@ export function explodeArrayObjects(arr) {
 } 
 
 
-export function buildFeatureTree(node) {
+function buildFeatureTree(node) {
 
   if (node.feature) {
     return { name: node.$.name, type: "feature" };
@@ -55,15 +55,23 @@ export function buildFeatureTree(node) {
     }
 
      if (andNode.and) {
-      andNode.or.forEach(o =>
+      andNode.and.forEach(o =>
         children.push(buildFeatureTree({ and: [o] }))
       );
+    }
+
+    if (andNode.opt) {
+    andNode.opt.forEach(o =>
+      children.push(buildFeatureTree({ opt: [o] }))
+    );
     }
 
     return {
       name: andNode.$.name,
       type: "and",
       mandatory: andNode.$.mandatory === "true",
+      abstract: andNode.$.abstract === "true",
+      hidden: andNode.$.hidden === "true",
       children
     };
   }
@@ -96,10 +104,18 @@ export function buildFeatureTree(node) {
       );
     }
 
+    if (altNode.opt) {
+    altNode.opt.forEach(o =>
+      children.push(buildFeatureTree({ opt: [o] }))
+    );
+    }
+
     return {
       name: altNode.$.name,
       type: "alt",
       mandatory: altNode.$.mandatory === "true",
+      abstract: altNode.$.abstract === "true",
+      hidden: altNode.$.hidden === "true",
       children
     };
   }
@@ -132,18 +148,70 @@ export function buildFeatureTree(node) {
       );
     }
 
+    if (orNode.opt) {
+    orNode.opt.forEach(o =>
+      children.push(buildFeatureTree({ opt: [o] }))
+    );
+    }
+
     return {
       name: orNode.$.name,
       type: "or",
       mandatory: orNode.$.mandatory === "true",
+      abstract: orNode.$.abstract === "true",
+      hidden: orNode.$.hidden === "true",
       children
     };
   }
 
+    if (node.opt) {
+    const optNode = node.opt[0];
+    const children = [];
+
+    if (optNode.feature) {
+      optNode.feature.forEach(f =>
+        children.push({ name: f.$.name, type: "feature" })
+      );
+    }
+
+    if (optNode.alt) {
+      optNode.alt.forEach(a =>
+        children.push(buildFeatureTree({ alt: [a] }))
+      );
+    }
+
+    if (optNode.or) {
+      optNode.or.forEach(o =>
+        children.push(buildFeatureTree({ or: [o] }))
+      );
+    }
+
+    if (optNode.and) {
+    optNode.and.forEach(o =>
+      children.push(buildFeatureTree({ and: [o] }))
+    );
+    }
+
+    if (optNode.opt) {
+    optNode.opt.forEach(o =>
+      children.push(buildFeatureTree({ opt: [o] }))
+    );
+    }
+
+    return {
+      name: optNode.$.name,
+      type: "opt",
+      mandatory: optNode.$.mandatory === "true",
+      abstract: optNode.$.abstract === "true",
+      hidden: optNode.$.hidden === "true",
+      children
+    };
+
+  }
   return null;
 }
 
-export function getSelectedFeatures(config) {
+function getSelectedFeatures(config) {
   const selected = new Set();
   config.configuration.feature.forEach(f => {
     const autoSelected = f.$.automatic === "selected";
@@ -153,46 +221,51 @@ export function getSelectedFeatures(config) {
   return selected;
 }
 
-export function validateFeatureTree(node, selected) {
+function validateFeatureTree(node, selected) {
+  console.log(node);
+  // console.log(selected);
+
+  if (node.mandatory && !selected.has(node.name)) return false;
 
   if (node.type === "feature") {
-    if (node.mandatory && !selected.has(node.name)) return false;
     return true;
   }
 
-  if (node.type === "and") {
-    // if the AND node itself is mandatory but not selected
-    if (node.mandatory && !selected.has(node.name)) return false;
-    return node.children.every(child =>
-      validateFeatureTree(child, selected)
-    );
+  if (node.type === "and" && selected.has(node.name)) {
+    return node.children.every(child => validateFeatureTree(child, selected)) &&
+           node.children.every(child => selected.has(child.name));
   }
 
-  if (node.type === "alt") {
+  if (node.type === "alt" && selected.has(node.name)) {
     const selectedChildren = node.children.filter(c =>
       selected.has(c.name)
     );
     if (selectedChildren.length === 1){
-      return selectedChildren.every(child => validateFeatureTree(child,selected));
+      return node.children.every(child => validateFeatureTree(child,selected));
     }
     else{
       return false;
     }
   }
 
-  if (node.type === "or") {
+  if (node.type === "or" && selected.has(node.name)) {
     const selectedChildren = node.children.filter(c =>
       selected.has(c.name)
     );
     if (selectedChildren.length >= 1){
-      return selectedChildren.every(child => validateFeatureTree(child,selected));
+      return node.children.every(child => validateFeatureTree(child,selected));
     }
     else{
       return false;
     }
   }
 
-  return true;
+  if (node.type === "opt" && selected.has(node.name)) {
+    return node.children.every(child => validateFeatureTree(child, selected));
+  }
+  
+  return node.children.every(child => validateFeatureTree(child, selected)) &&
+         node.children.every(child => !selected.has(child.name));;
 }
 
 // Evaluate a constraint expression recursively
@@ -243,7 +316,7 @@ function evalExpr(expr, selected) {
  * @param {Set<string>} selected
  * @returns {boolean}
  */
-export function validateConstraints(constraints, selected) {
+function validateConstraints(constraints, selected) {
   if (!constraints || !constraints.rule) return true;
 
   return constraints.rule.every(rule => {
@@ -255,28 +328,44 @@ export function validateConstraints(constraints, selected) {
 /**
  * Run validation process
  */
-export async function main() {
+async function validate() {
   const featureModelXML = await loadXML("model.xml");
-  const configXML = await loadXML("Hello.xml");
+  const configXML = await loadXML("config.xml");
+
 
   const featureTree = buildFeatureTree(featureModelXML.featureModel.struct[0]);
-  console.log(featureTree);
   const selectedFeatures = getSelectedFeatures(configXML);
-  // console.log(selectedFeatures);
 
   const structureValid = validateFeatureTree(featureTree, selectedFeatures);
-  const constraints = featureModelXML.featureModel.constraints[0];
-  // console.log(constraints);
-  const constraintsValid = validateConstraints(constraints, selectedFeatures);
-
-  if (structureValid && constraintsValid) {
-    console.log("✅ Configuration is VALID");
-  } else {
-    console.log("❌ Configuration is INVALID");
+  const constraintsValid = true;
+  if (featureModelXML.featureModel.constraints != undefined){ 
+    const constraints =  featureModelXML.featureModel.constraints[0];
+    const constraintsValid = validateConstraints(constraints, selectedFeatures);
   }
+  
+    
+  let result;
+  if (structureValid && constraintsValid) {
+    result = "CONFIGURATION IS VALID";
+  } else {
+     result = "CONFIGURATION IS INVALID";
+  }
+  console.log(result);
+  return result;
 }
 
-// Run only if called directly
-if (import.meta.url === `file://${process.argv[1]}`) {
-  main().catch(console.error);
+async function main (){
+  validate();
 }
+
+module.exports = {
+  loadXML,
+  explodeArrayObjects,
+  buildFeatureTree,
+  getSelectedFeatures,
+  validateFeatureTree,
+  validateConstraints,
+  validate
+};
+
+main();
