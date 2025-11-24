@@ -32,11 +32,21 @@ async function config_to_svg(configXML){
   const validated = await validate();
   // console.log(validated);
   // Wrap in <svg> element
+  let color = "green";
+  if (validated == "CONFIGURATION IS INVALID"){
+    color = "red";
+  }
+
   const svg = `
-  <svg xmlns="http://www.w3.org/2000/svg" width="300" height="${config.length * 55}">
+  <svg xmlns="http://www.w3.org/2000/svg" width="300" height="${config.length * 75}">
   <rect width="100%" height="100%" fill="#f0f0f0"/>
     ${svgContent}
-      <text x="30" y="${Y + 60}" font-family="sans-serif" font-size="14">
+      <text x="30" 
+      y="${Y + 60}" 
+      font-family="sans-serif" 
+      font-size="14"
+      fill="${color}"
+      font-weight="bold">
         ${validated}
       </text>
   </svg>
@@ -49,7 +59,7 @@ async function config_to_svg(configXML){
 
 async function main() {
 
-  const configXML = await loadXML("Hello.xml");
+  const configXML = await loadXML("config.xml");
   const svg =  await config_to_svg(configXML);
   fs.writeFileSync("config.svg", svg);
   // console.log(svg);

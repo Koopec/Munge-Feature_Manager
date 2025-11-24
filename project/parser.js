@@ -60,6 +60,12 @@ function buildFeatureTree(node) {
       );
     }
 
+    if (andNode.opt) {
+    andNode.opt.forEach(o =>
+      children.push(buildFeatureTree({ opt: [o] }))
+    );
+    }
+
     return {
       name: andNode.$.name,
       type: "and",
@@ -96,6 +102,12 @@ function buildFeatureTree(node) {
       altNode.and.forEach(o =>
         children.push(buildFeatureTree({ and: [o] }))
       );
+    }
+
+    if (altNode.opt) {
+    altNode.opt.forEach(o =>
+      children.push(buildFeatureTree({ opt: [o] }))
+    );
     }
 
     return {
@@ -136,6 +148,12 @@ function buildFeatureTree(node) {
       );
     }
 
+    if (orNode.opt) {
+    orNode.opt.forEach(o =>
+      children.push(buildFeatureTree({ opt: [o] }))
+    );
+    }
+
     return {
       name: orNode.$.name,
       type: "or",
@@ -146,6 +164,50 @@ function buildFeatureTree(node) {
     };
   }
 
+    if (node.opt) {
+    const optNode = node.opt[0];
+    const children = [];
+
+    if (optNode.feature) {
+      optNode.feature.forEach(f =>
+        children.push({ name: f.$.name, type: "feature" })
+      );
+    }
+
+    if (optNode.alt) {
+      optNode.alt.forEach(a =>
+        children.push(buildFeatureTree({ alt: [a] }))
+      );
+    }
+
+    if (optNode.or) {
+      optNode.or.forEach(o =>
+        children.push(buildFeatureTree({ or: [o] }))
+      );
+    }
+
+    if (optNode.and) {
+    optNode.and.forEach(o =>
+      children.push(buildFeatureTree({ and: [o] }))
+    );
+    }
+
+    if (optNode.opt) {
+    optNode.opt.forEach(o =>
+      children.push(buildFeatureTree({ opt: [o] }))
+    );
+    }
+
+    return {
+      name: optNode.$.name,
+      type: "opt",
+      mandatory: optNode.$.mandatory === "true",
+      abstract: optNode.$.abstract === "true",
+      hidden: optNode.$.hidden === "true",
+      children
+    };
+
+  }
   return null;
 }
 
@@ -160,45 +222,50 @@ function getSelectedFeatures(config) {
 }
 
 function validateFeatureTree(node, selected) {
+  console.log(node);
+  // console.log(selected);
+
+  if (node.mandatory && !selected.has(node.name)) return false;
 
   if (node.type === "feature") {
-    if (node.mandatory && !selected.has(node.name)) return false;
     return true;
   }
 
-  if (node.type === "and") {
-    // if the AND node itself is mandatory but not selected
-    if (node.mandatory && !selected.has(node.name)) return false;
-    return node.children.every(child =>
-      validateFeatureTree(child, selected)
-    );
+  if (node.type === "and" && selected.has(node.name)) {
+    return node.children.every(child => validateFeatureTree(child, selected)) &&
+           node.children.every(child => selected.has(child.name));
   }
 
-  if (node.type === "alt") {
+  if (node.type === "alt" && selected.has(node.name)) {
     const selectedChildren = node.children.filter(c =>
       selected.has(c.name)
     );
     if (selectedChildren.length === 1){
-      return selectedChildren.every(child => validateFeatureTree(child,selected));
+      return node.children.every(child => validateFeatureTree(child,selected));
     }
     else{
       return false;
     }
   }
 
-  if (node.type === "or") {
+  if (node.type === "or" && selected.has(node.name)) {
     const selectedChildren = node.children.filter(c =>
       selected.has(c.name)
     );
     if (selectedChildren.length >= 1){
-      return selectedChildren.every(child => validateFeatureTree(child,selected));
+      return node.children.every(child => validateFeatureTree(child,selected));
     }
     else{
       return false;
     }
   }
 
-  return true;
+  if (node.type === "opt" && selected.has(node.name)) {
+    return node.children.every(child => validateFeatureTree(child, selected));
+  }
+  
+  return node.children.every(child => validateFeatureTree(child, selected)) &&
+         node.children.every(child => !selected.has(child.name));;
 }
 
 // Evaluate a constraint expression recursively
@@ -262,8 +329,8 @@ function validateConstraints(constraints, selected) {
  * Run validation process
  */
 async function validate() {
-  const featureModelXML = await loadXML("fakka.xml");
-  const configXML = await loadXML("Hello.xml");
+  const featureModelXML = await loadXML("model.xml");
+  const configXML = await loadXML("config.xml");
 
 
   const featureTree = buildFeatureTree(featureModelXML.featureModel.struct[0]);

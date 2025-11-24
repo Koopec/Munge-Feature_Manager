@@ -21,7 +21,7 @@ function featureTreeToDot(node) {
   const lines = [];
 
   function traverse(n, parentName = null, relation = null) {
-    const nodeName = n.name.replace(/[^a-zA-Z0-9]/g, "_");
+    const nodeName = `"${n.name}"`;
     const { color, shape, label } = nodeStyle(n);
 
     lines.push(`${nodeName} [label="${label}", shape=${shape}, style=filled, fillcolor=${color}];`);
@@ -38,6 +38,7 @@ function featureTreeToDot(node) {
   }
 
   traverse(node);
+
   return `digraph G {
     rankdir=TB;
     graph [size="8,3", ratio=fill];
@@ -104,6 +105,8 @@ async function main() {
   const featureTree = buildFeatureTree(featureModelXML.featureModel.struct[0]);
 
   const dot = featureTreeToDot(featureTree);
+  console.log(dot);
+
   const viz = new Viz({ Module, render });
   let svg = await viz.renderString(dot);
 
