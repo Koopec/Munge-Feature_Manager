@@ -14,8 +14,14 @@
   "contributes": {
     "commands": [
       {
-        "command": "munge-feature-manager.helloWorld",
-        "title": "Hello World"
+        "command": "munge-feature-manager.compileWithMunge",
+        "title": "Compile with Munge"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "munge-feature-manager.compileWithMunge",
+        "key": "ctrl+shift+m"
       }
     ]
   },
