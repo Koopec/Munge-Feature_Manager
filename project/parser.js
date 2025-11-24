@@ -1,12 +1,12 @@
-import fs from "fs";
-import { parseStringPromise } from "xml2js";
+const fs = require("fs");
+const { parseStringPromise } = require("xml2js");
 
-export async function loadXML(filePath) {
+async function loadXML(filePath) {
   const data = fs.readFileSync(filePath, "utf-8");
   return await parseStringPromise(data);
 }
 
-export function explodeArrayObjects(arr) {
+function explodeArrayObjects(arr) {
   const result = [];
 
   arr.forEach(obj => {
@@ -26,7 +26,7 @@ export function explodeArrayObjects(arr) {
 } 
 
 
-export function buildFeatureTree(node) {
+function buildFeatureTree(node) {
 
   if (node.feature) {
     return { name: node.$.name, type: "feature" };
@@ -55,7 +55,7 @@ export function buildFeatureTree(node) {
     }
 
      if (andNode.and) {
-      andNode.or.forEach(o =>
+      andNode.and.forEach(o =>
         children.push(buildFeatureTree({ and: [o] }))
       );
     }
@@ -64,6 +64,8 @@ export function buildFeatureTree(node) {
       name: andNode.$.name,
       type: "and",
       mandatory: andNode.$.mandatory === "true",
+      abstract: andNode.$.abstract === "true",
+      hidden: andNode.$.hidden === "true",
       children
     };
   }
@@ -100,6 +102,8 @@ export function buildFeatureTree(node) {
       name: altNode.$.name,
       type: "alt",
       mandatory: altNode.$.mandatory === "true",
+      abstract: altNode.$.abstract === "true",
+      hidden: altNode.$.hidden === "true",
       children
     };
   }
@@ -136,6 +140,8 @@ export function buildFeatureTree(node) {
       name: orNode.$.name,
       type: "or",
       mandatory: orNode.$.mandatory === "true",
+      abstract: orNode.$.abstract === "true",
+      hidden: orNode.$.hidden === "true",
       children
     };
   }
@@ -143,7 +149,7 @@ export function buildFeatureTree(node) {
   return null;
 }
 
-export function getSelectedFeatures(config) {
+function getSelectedFeatures(config) {
   const selected = new Set();
   config.configuration.feature.forEach(f => {
     const autoSelected = f.$.automatic === "selected";
@@ -153,7 +159,7 @@ export function getSelectedFeatures(config) {
   return selected;
 }
 
-export function validateFeatureTree(node, selected) {
+function validateFeatureTree(node, selected) {
 
   if (node.type === "feature") {
     if (node.mandatory && !selected.has(node.name)) return false;
@@ -243,7 +249,7 @@ function evalExpr(expr, selected) {
  * @param {Set<string>} selected
  * @returns {boolean}
  */
-export function validateConstraints(constraints, selected) {
+function validateConstraints(constraints, selected) {
   if (!constraints || !constraints.rule) return true;
 
   return constraints.rule.every(rule => {
@@ -255,28 +261,44 @@ export function validateConstraints(constraints, selected) {
 /**
  * Run validation process
  */
-export async function main() {
-  const featureModelXML = await loadXML("model.xml");
+async function validate() {
+  const featureModelXML = await loadXML("fakka.xml");
   const configXML = await loadXML("Hello.xml");
 
+
   const featureTree = buildFeatureTree(featureModelXML.featureModel.struct[0]);
-  console.log(featureTree);
   const selectedFeatures = getSelectedFeatures(configXML);
-  // console.log(selectedFeatures);
 
   const structureValid = validateFeatureTree(featureTree, selectedFeatures);
-  const constraints = featureModelXML.featureModel.constraints[0];
-  // console.log(constraints);
-  const constraintsValid = validateConstraints(constraints, selectedFeatures);
-
-  if (structureValid && constraintsValid) {
-    console.log("✅ Configuration is VALID");
-  } else {
-    console.log("❌ Configuration is INVALID");
+  const constraintsValid = true;
+  if (featureModelXML.featureModel.constraints != undefined){ 
+    const constraints =  featureModelXML.featureModel.constraints[0];
+    const constraintsValid = validateConstraints(constraints, selectedFeatures);
   }
+  
+    
+  let result;
+  if (structureValid && constraintsValid) {
+    result = "CONFIGURATION IS VALID";
+  } else {
+     result = "CONFIGURATION IS INVALID";
+  }
+  console.log(result);
+  return result;
 }
 
-// Run only if called directly
-if (import.meta.url === `file://${process.argv[1]}`) {
-  main().catch(console.error);
+async function main (){
+  validate();
 }
+
+module.exports = {
+  loadXML,
+  explodeArrayObjects,
+  buildFeatureTree,
+  getSelectedFeatures,
+  validateFeatureTree,
+  validateConstraints,
+  validate
+};
+
+main();

@@ -1,12 +1,12 @@
-import fs from "fs";
-import Viz from "viz.js";
-import { Module, render } from "viz.js/full.render.js";
-import { loadXML, explodeArrayObjects ,buildFeatureTree } from "./parser.js"; // your parser
+const fs = require("fs");
+const Viz = require("viz.js");
+const { Module, render } = require("viz.js/full.render.js");
+const { loadXML, explodeArrayObjects, buildFeatureTree } = require("./parser.js");
 
 // Map node properties to DOT style
 function nodeStyle(node) {
-  let color = node.hidden ? "#ccc" : node.mandatory ? "gold" : "lightblue";
-  let shape = node.abstract ? "diamond" : node.type === "alt" ? "ellipse" : "box";
+  let color = node.mandatory ? "gold" : "lightblue";
+  let shape = "box";
   let label = node.name;
   const flags = [];
   if (node.mandatory) flags.push("M");
@@ -47,7 +47,7 @@ function featureTreeToDot(node) {
   }`;
 }
 
-export function constraintToText(expr) {
+function constraintToText(expr) {
   // VARIABLE
   if (expr.var) {
     return expr.var[0];
@@ -85,19 +85,33 @@ export function constraintToText(expr) {
   return "";
 }
 
+
+function more_constraints(svg,constraints){
+
+  let y = -200;
+
+  constraints.rule.forEach(constraint =>{
+    // console.log(constraintToText(constraint));
+    svg = svg.replace('</g>\n</svg>',`<text x="280" y="${y}" font-size="6" fill="black">${constraintToText(constraint)}</text></g>\n</svg>`);
+    y = y + 10;
+  } );
+
+  return svg;
+}
+
 async function main() {
   const featureModelXML = await loadXML("model.xml");
   const featureTree = buildFeatureTree(featureModelXML.featureModel.struct[0]);
-  const constraints = featureModelXML.featureModel.constraints[0];
-  const text_constraints = constraintToText(constraints.rule[0]);
-  console.log(text_constraints);
 
   const dot = featureTreeToDot(featureTree);
   const viz = new Viz({ Module, render });
   let svg = await viz.renderString(dot);
 
-  // add constraints
-  svg = svg.replace('</g>\n</svg>',`<text x="280" y="-200" font-size="6" fill="black">${text_constraints}</text></g>\n</svg>`);
+  if (featureModelXML.featureModel.constraints != undefined){
+    const constraints = featureModelXML.featureModel.constraints[0];
+    svg = more_constraints(svg, constraints);
+    // console.log(constraints.rule.length);
+  }
   
   fs.writeFileSync("featureTreeEnhanced.svg", svg);
   console.log("✅ Enhanced SVG saved as featureTreeEnhanced.svg");
