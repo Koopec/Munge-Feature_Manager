@@ -40,7 +40,7 @@ function activate(context) {
 	const extensionPath = path.join(__dirname, '.');
 	const command = `javac Munge.java`
 
-	exec(command, {cwd: extensionPath}, (error, stdout, stderr) => {
+	exec(command, { cwd: extensionPath }, (error, stdout, stderr) => {
 		if (error) {
 			vscode.window.showErrorMessage(error.message);
 			return;
@@ -78,12 +78,12 @@ function activate(context) {
 							return;
 						}
 
-						const javaFiles = files.filter(file => file.endsWith('.java')).map(file => path.join(currentDirectory, file));
-						const mungePath = path.join(extensionPath, 'Munge');
-						if (javaFiles.length > 0) {
-							const command = `java "${mungePath}" -D${featureNames.join(' -D')} ${javaFiles.join(' ')}`
+						const javaFiles = files.filter(file => file.endsWith('.java')).map(file => `"${path.join(currentDirectory, file)}"`);
 
-							exec(command, (error, stdout, stderr) => {
+						if (javaFiles.length > 0) {
+							const command = `java Munge -D${featureNames.join(' -D')} ${javaFiles.join(' ')}`
+							console.log(command);
+							exec(command, { cwd: extensionPath }, (error, stdout, stderr) => {
 								if (error) {
 									vscode.window.showErrorMessage(error.message);
 									return;
@@ -93,10 +93,20 @@ function activate(context) {
 									return;
 								}
 								if (stdout) {
-									vscode.window.showErrorMessage(stdout);
+									const mungeDirectory = path.join(currentDirectory, 'munge');
+
+									if (!fs.existsSync(mungeDirectory)) {
+										fs.mkdirSync(mungeDirectory);
+									}
+
+									const mungePath = path.join(mungeDirectory, 'Main.java');
+									fs.writeFileSync(mungePath, stdout);
+
+									const terminal = vscode.window.createTerminal('Compile with Munge');
+									terminal.show();
+									terminal.sendText(`cd munge && java Main.java && cd ..`);
 								}
 							});
-						vscode.window.showInformationMessage('Successfully compiled with Munge.');
 						}
 					});
 				}
