@@ -89,8 +89,18 @@ function activate(context) {
 									return;
 								}
 								if (stdout) {
-									vscode.window.showErrorMessage(stdout);
-									vscode.window.showInformationMessage('Successfully compiled with Munge.');
+									const mungeDirectory = path.join(currentDirectory, 'munge');
+
+									if (!fs.existsSync(mungeDirectory)) {
+										fs.mkdirSync(mungeDirectory);
+									}
+
+									const mungePath = path.join(mungeDirectory, 'Main.java');
+									fs.writeFileSync(mungePath, stdout);
+
+									const terminal = vscode.window.createTerminal('Compile with Munge');
+									terminal.show();
+									terminal.sendText(`cd munge && java Main.java && cd ..`);
 								}
 							});
 						}
