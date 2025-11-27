@@ -222,7 +222,7 @@ function getSelectedFeatures(config) {
 }
 
 function validateFeatureTree(node, selected) {
-  console.log(node);
+  // console.log(node);
   // console.log(selected);
 
   if (node.mandatory && !selected.has(node.name)) return false;
@@ -328,9 +328,9 @@ function validateConstraints(constraints, selected) {
 /**
  * Run validation process
  */
-async function validate() {
-  const featureModelXML = await loadXML("model.xml");
-  const configXML = await loadXML("config.xml");
+async function validate(path_config, path_model) {
+  const featureModelXML = await loadXML(path_model);
+  const configXML = await loadXML(path_config);
 
 
   const featureTree = buildFeatureTree(featureModelXML.featureModel.struct[0]);
@@ -350,12 +350,8 @@ async function validate() {
   } else {
      result = "CONFIGURATION IS INVALID";
   }
-  console.log(result);
+  // console.log(result);
   return result;
-}
-
-async function main (){
-  validate();
 }
 
 module.exports = {
@@ -368,4 +364,4 @@ module.exports = {
   validate
 };
 
-main();
+// validate();

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<featureModel>
+    <struct>
+        <and name="System">
+            <feature name="Core"/>
+            <or name="UI">
+                <feature name="DarkMode"/>
+                <feature name="HighContrast"/>
+            </or>
+            <opt name="Logging">
+                <feature name="File"/>
+                <feature name="Cloud"/>
+                <alt name="Database">
+                    <feature name="SQL"/>
+                    <feature name="NOSQL"/>
+                </alt>
+            </opt>
+        </and>
+    </struct>
+</featureModel>

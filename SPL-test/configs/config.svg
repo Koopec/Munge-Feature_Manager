@@ -1,0 +1,80 @@
+
+  <svg xmlns="http://www.w3.org/2000/svg" width="300" height="825">
+  <rect width="100%" height="100%" fill="#f0f0f0"/>
+    
+      <rect x="20" y="20" width="200" height="35" rx="6"
+        fill="#8fcd88" stroke="#555"/>
+      <text x="30" y="43" font-family="sans-serif" font-size="14">
+        System (selected)
+      </text>
+    
+      <rect x="20" y="65" width="200" height="35" rx="6"
+        fill="#8fcd88" stroke="#555"/>
+      <text x="30" y="88" font-family="sans-serif" font-size="14">
+        Core (selected)
+      </text>
+    
+      <rect x="20" y="110" width="200" height="35" rx="6"
+        fill="#8fcd88" stroke="#555"/>
+      <text x="30" y="133" font-family="sans-serif" font-size="14">
+        UI (selected)
+      </text>
+    
+      <rect x="20" y="155" width="200" height="35" rx="6"
+        fill="#8fcd88" stroke="#555"/>
+      <text x="30" y="178" font-family="sans-serif" font-size="14">
+        Logging (selected)
+      </text>
+    
+      <rect x="20" y="200" width="200" height="35" rx="6"
+        fill="#8fcd88" stroke="#555"/>
+      <text x="30" y="223" font-family="sans-serif" font-size="14">
+        DarkMode (selected)
+      </text>
+    
+      <rect x="20" y="245" width="200" height="35" rx="6"
+        fill="#8fcd88" stroke="#555"/>
+      <text x="30" y="268" font-family="sans-serif" font-size="14">
+        HighContrast (selected)
+      </text>
+    
+      <rect x="20" y="290" width="200" height="35" rx="6"
+        fill="#e89a9a" stroke="#555"/>
+      <text x="30" y="313" font-family="sans-serif" font-size="14">
+        File (unselected)
+      </text>
+    
+      <rect x="20" y="335" width="200" height="35" rx="6"
+        fill="#e89a9a" stroke="#555"/>
+      <text x="30" y="358" font-family="sans-serif" font-size="14">
+        Cloud (unselected)
+      </text>
+    
+      <rect x="20" y="380" width="200" height="35" rx="6"
+        fill="#8fcd88" stroke="#555"/>
+      <text x="30" y="403" font-family="sans-serif" font-size="14">
+        Database (selected)
+      </text>
+    
+      <rect x="20" y="425" width="200" height="35" rx="6"
+        fill="#e89a9a" stroke="#555"/>
+      <text x="30" y="448" font-family="sans-serif" font-size="14">
+        SQL (unselected)
+      </text>
+    
+      <rect x="20" y="470" width="200" height="35" rx="6"
+        fill="#8fcd88" stroke="#555"/>
+      <text x="30" y="493" font-family="sans-serif" font-size="14">
+        NOSQL (selected)
+      </text>
+    
+      <text x="30" 
+      y="530" 
+      font-family="sans-serif" 
+      font-size="14"
+      fill="green"
+      font-weight="bold">
+        CONFIGURATION IS VALID
+      </text>
+  </svg>
+  

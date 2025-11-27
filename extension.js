@@ -5,6 +5,10 @@ const xml2js = require('xml2js');
 const path = require('path');
 const fs = require('fs');
 const { exec } = require('child_process');
+const visual_model = require('./project/visual_model.js')
+const visual_config = require('./project/visual_config.js')
+
+
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 
@@ -102,9 +106,50 @@ function activate(context) {
 			});
 	});
 
-	const createVisualization = vscode.commands.registerCommand('munge-feature-manager.createVisualization', function () {
-		vscode.window.showInformationMessage('Hello world!');
+	const createVisualization = vscode.commands.registerCommand('munge-feature-manager.createVisualization', async function () {
+		const currentDirectory = vscode.workspace.workspaceFolders[0].uri.fsPath;
+		
+		const editor = vscode.window.activeTextEditor;
+		const filePath = editor.document.uri.fsPath;
+		const fileDir = path.dirname(filePath);
+		const parentDir = path.basename(fileDir);
+		
+		if (parentDir === "model"){
+			console.log(filePath);
+			await visual_model.visualize(filePath);
+			const uri = vscode.Uri.file(fileDir + "/featureTree.svg");
+			await vscode.commands.executeCommand(
+				"vscode.openWith",
+				uri,
+				"imagePreview.previewEditor",
+				{ viewColumn: vscode.ViewColumn.Beside }
+    		);
+		}
+		else if (parentDir === "configs"){
+			console.log(filePath);	
+			await visual_config.visualize(filePath);
+			const uri = vscode.Uri.file(fileDir + "/config.svg");
+			await vscode.commands.executeCommand(	
+				"vscode.openWith",
+				uri,
+				"imagePreview.previewEditor",
+				{ viewColumn: vscode.ViewColumn.Beside }
+    		);
+		}
+		else{
+			
+		}
+
+		// await visual.visualize(currentDirectory + "/model");
+		// const uri = vscode.Uri.file(currentDirectory + "/model/featureTree.svg");
+		// await vscode.commands.executeCommand(
+        // 	"vscode.openWith",
+        // 	uri,
+        // 	"imagePreview.previewEditor",
+        // 	{ viewColumn: vscode.ViewColumn.Beside }
+    	// );
 	});
+
 
 	context.subscriptions.push(compileWithMunge);
 	context.subscriptions.push(createVisualization);

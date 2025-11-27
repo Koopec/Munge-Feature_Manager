@@ -1,7 +1,8 @@
 {
   "name": "munge-feature-manager",
   "displayName": "Munge feature manager",
-  "description": "",
+  "description": "extension munge",
+  "publisher": "us",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.106.0"
@@ -9,7 +10,9 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+  "onCommand:munge-feature-manager.compileWithMunge",
+  "onCommand:munge-feature-manager.createVisualization"],
   "main": "./extension.js",
   "contributes": {
     "commands": [

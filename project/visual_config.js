@@ -1,7 +1,9 @@
 const fs = require("fs");
 const { loadXML, validate } = require("./parser.js");
+const path = require('path');
 
-async function config_to_svg(configXML){
+
+async function config_to_svg(configXML,path_config,path_model){
 
   const config = configXML.configuration.feature;
 
@@ -10,7 +12,7 @@ async function config_to_svg(configXML){
   const boxHeight = 35;
   const spacing = 10;
   
-  let Y;
+  let Y=0;
 
   let svgContent = "";
   config.forEach((f, i) => {
@@ -29,9 +31,8 @@ async function config_to_svg(configXML){
     `;
   });
 
-  const validated = await validate();
-  // console.log(validated);
-  // Wrap in <svg> element
+  const validated = await validate(path_config, path_model);
+
   let color = "green";
   if (validated == "CONFIGURATION IS INVALID"){
     color = "red";
@@ -51,19 +52,22 @@ async function config_to_svg(configXML){
       </text>
   </svg>
   `;
-  // console.log(svg);
-
   return svg;
 
 }
 
-async function main() {
-
-  const configXML = await loadXML("config.xml");
-  const svg =  await config_to_svg(configXML);
-  fs.writeFileSync("config.svg", svg);
-  // console.log(svg);
+async function visualize(pathf) {
+  const configXML = await loadXML(pathf);
+  const model_path = path.dirname(path.dirname(pathf)) + "/model/model.xml";
+  const svg =  await config_to_svg(configXML,pathf,model_path);
+  pathf = path.dirname(pathf);
+  fs.writeFileSync(pathf + "/config.svg", svg);
 }
 
+module.exports = {
+  visualize
+};
 
-main().catch(console.error);
+
+
+// main().catch(console.error);

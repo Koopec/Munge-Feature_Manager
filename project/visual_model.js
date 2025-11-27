@@ -2,6 +2,7 @@ const fs = require("fs");
 const Viz = require("viz.js");
 const { Module, render } = require("viz.js/full.render.js");
 const { loadXML, explodeArrayObjects, buildFeatureTree } = require("./parser.js");
+const path = require('path');
 
 // Map node properties to DOT style
 function nodeStyle(node) {
@@ -100,12 +101,11 @@ function more_constraints(svg,constraints){
   return svg;
 }
 
-async function main() {
-  const featureModelXML = await loadXML("model.xml");
+async function visualize(pathf) {
+  const featureModelXML = await loadXML(pathf);
   const featureTree = buildFeatureTree(featureModelXML.featureModel.struct[0]);
 
   const dot = featureTreeToDot(featureTree);
-  console.log(dot);
 
   const viz = new Viz({ Module, render });
   let svg = await viz.renderString(dot);
@@ -115,9 +115,13 @@ async function main() {
     svg = more_constraints(svg, constraints);
     // console.log(constraints.rule.length);
   }
-  
-  fs.writeFileSync("featureTreeEnhanced.svg", svg);
-  console.log("✅ Enhanced SVG saved as featureTreeEnhanced.svg");
+  pathf = path.dirname(pathf);
+  fs.writeFileSync(pathf + "/featureTree.svg", svg);
+  // console.log("✅ Enhanced SVG saved as featureTreeEnhanced.svg");
 }
 
-main().catch(console.error);
+module.exports = {
+  visualize
+};
+
+// visualize("model.xml").catch(console.error);
