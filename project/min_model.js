@@ -1,5 +1,6 @@
 const fs = require("fs");
-const {loadXML, buildFeatureTree} = require("./parser.js");
+const {loadXML, buildFeatureTree, validateConstraints, validateFeatureTree} = require("./parser.js");
+
 
 function gen_min_config(node, mandatory){
 
@@ -62,6 +63,38 @@ ${result}
 </configuration>`;
 }
 
+function allSublists(arr) {
+  const result = [[]];
+
+  for (const item of arr) {
+    const newSubsets = result.map(subset => [...subset, item]);
+    result.push(...newSubsets);
+  }
+
+  return result;
+}
+
+function try_val(cons,must,features){
+
+    for (const item of features){
+        const set = new Set(must.concat(item));
+        if (validateConstraints(cons, set)){
+            return item;
+        }
+    }
+    return [];
+}
+
+function try_val_struct(tree,must,features){
+
+    for (const item of features){
+        const set = new Set(must.concat(item));
+        if (validateFeatureTree(tree, set)){
+            return item;
+        }
+    }
+    return [];
+}
 
 async function min_conf(pathf){
 
@@ -69,13 +102,25 @@ async function min_conf(pathf){
     const featureTree = buildFeatureTree(featureModelXML.featureModel.struct[0]);
 
     const minimal = gen_min_config(featureTree, false);
-    console.log(minimal[0]);
-    console.log(minimal[1]);
+    const features = minimal[0];
+    let must_features = minimal[1];
+    const constraints =  featureModelXML.featureModel.constraints[0];
 
-    const conf = create_config(minimal[0], minimal[1]);
+    let non_must_features = features.filter(x => !must_features.includes(x));
+
+    must_features = must_features.concat(try_val(constraints,must_features, allSublists(non_must_features)));
+
+    non_must_features = non_must_features.filter(x => !must_features.includes(x));
+
+    let new_f = try_val_struct(featureTree, must_features,allSublists(non_must_features));
+
+    must_features = must_features.concat(new_f);
+    console.log(must_features);
+    const conf = create_config(features, must_features);
 
     fs.writeFileSync("config.xml", conf);
     
+
 }
 
 min_conf();
