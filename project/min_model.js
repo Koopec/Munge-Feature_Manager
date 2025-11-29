@@ -75,7 +75,7 @@ function allSublists(arr) {
 }
 
 function try_val(cons,must,features){
-
+    features.sort((a, b) => a.length - b.length);
     for (const item of features){
         const set = new Set(must.concat(item));
         if (validateConstraints(cons, set)){
@@ -86,7 +86,7 @@ function try_val(cons,must,features){
 }
 
 function try_val_struct(tree,must,features){
-
+    features.sort((a, b) => a.length - b.length);
     for (const item of features){
         const set = new Set(must.concat(item));
         if (validateFeatureTree(tree, set)){
