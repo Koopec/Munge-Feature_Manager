@@ -90,11 +90,19 @@ function constraintToText(expr) {
 
 function more_constraints(svg,constraints){
 
-  let y = -200;
+
+  const widthMatch = svg.match(/width="(\d+(?:\.\d+)?)pt"/);
+  const width = widthMatch ? parseFloat(widthMatch[1]) : null;
+
+  const heightMatch = svg.match(/height="(\d+(?:\.\d+)?)pt"/);
+  const height = heightMatch ? parseFloat(heightMatch[1]) : null;
+
+  let y = -height - 50;
+  let x = width - 50;
 
   constraints.rule.forEach(constraint =>{
     // console.log(constraintToText(constraint));
-    svg = svg.replace('</g>\n</svg>',`<text x="280" y="${y}" font-size="6" fill="black">${constraintToText(constraint)}</text></g>\n</svg>`);
+    svg = svg.replace('</g>\n</svg>',`<text x="${x}" y="${y}" font-size="8" fill="black">${constraintToText(constraint)}</text></g>\n</svg>`);
     y = y + 10;
   } );
 

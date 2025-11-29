@@ -222,8 +222,6 @@ function getSelectedFeatures(config) {
 }
 
 function validateFeatureTree(node, selected) {
-  // console.log(node);
-  // console.log(selected);
 
   if (node.mandatory && !selected.has(node.name)) return false;
 
@@ -337,10 +335,10 @@ async function validate(path_config, path_model) {
   const selectedFeatures = getSelectedFeatures(configXML);
 
   const structureValid = validateFeatureTree(featureTree, selectedFeatures);
-  const constraintsValid = true;
+  let constraintsValid = true;
   if (featureModelXML.featureModel.constraints != undefined){ 
     const constraints =  featureModelXML.featureModel.constraints[0];
-    const constraintsValid = validateConstraints(constraints, selectedFeatures);
+    constraintsValid = validateConstraints(constraints, selectedFeatures);
   }
   
     
