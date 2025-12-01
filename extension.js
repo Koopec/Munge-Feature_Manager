@@ -5,8 +5,9 @@ const xml2js = require('xml2js');
 const path = require('path');
 const fs = require('fs');
 const { exec } = require('child_process');
-const visual_model = require('./project/visual_model.js')
-const visual_config = require('./project/visual_config.js')
+const visual_model = require('./project/visual_model.js');
+const visual_config = require('./project/visual_config.js');
+const min_config = require('./project/min_model.js');
 
 
 // This method is called when your extension is activated
@@ -62,7 +63,8 @@ function activate(context) {
 	const compileWithMunge = vscode.commands.registerCommand('munge-feature-manager.compileWithMunge', function () {
 
 		const parser = new xml2js.Parser();
-		const model = readXml(currentDirectory, 'model.xml');
+		console.log(currentDirectory);
+		const model = readXml(currentDirectory, '/configs/config.xml');
 
 		parser.parseStringPromise(model)
 			.then(result => {
@@ -147,20 +149,25 @@ function activate(context) {
     		);
 		}
 		else{
-			
+			vscode.window.showErrorMessage("Current file not model or config directory.");
 		}
-
-		// await visual.visualize(currentDirectory + "/model");
-		// const uri = vscode.Uri.file(currentDirectory + "/model/featureTree.svg");
-		// await vscode.commands.executeCommand(
-        // 	"vscode.openWith",
-        // 	uri,
-        // 	"imagePreview.previewEditor",
-        // 	{ viewColumn: vscode.ViewColumn.Beside }
-    	// );
 	});
 
+	const createMinConfig = vscode.commands.registerCommand('munge-feature-manager.createMinConfig', async function () {
+		const editor = vscode.window.activeTextEditor;
+		const filePath = editor.document.uri.fsPath;
+		const fileDir = path.dirname(filePath);
+		const parentDir = path.basename(fileDir);
+		if (filePath === fileDir + "/model.xml"){
+			await min_config.min_conf(filePath);
 
+		}
+		else {
+			vscode.window.showErrorMessage("Not a model.xml file in the model directory.");
+		}
+	});
+
+	context.subscriptions.push(createMinConfig);
 	context.subscriptions.push(compileWithMunge);
 	context.subscriptions.push(createVisualization);
 }

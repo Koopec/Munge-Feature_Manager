@@ -1,5 +1,6 @@
 const fs = require("fs");
 const {loadXML, buildFeatureTree, validateConstraints, validateFeatureTree} = require("./parser.js");
+const path = require('path');
 
 
 function gen_min_config(node, mandatory){
@@ -98,7 +99,7 @@ function try_val_struct(tree,must,features){
 
 async function min_conf(pathf){
 
-    const featureModelXML = await loadXML("model.xml");
+    const featureModelXML = await loadXML(pathf);
     const featureTree = buildFeatureTree(featureModelXML.featureModel.struct[0]);
 
     const minimal = gen_min_config(featureTree, false);
@@ -115,12 +116,14 @@ async function min_conf(pathf){
     let new_f = try_val_struct(featureTree, must_features,allSublists(non_must_features));
 
     must_features = must_features.concat(new_f);
-    console.log(must_features);
     const conf = create_config(features, must_features);
-
-    fs.writeFileSync("config.xml", conf);
-    
-
+    pathf = path.dirname(path.dirname(pathf));
+    fs.writeFileSync(pathf +"/configs/config.xml", conf);
 }
 
-min_conf();
+module.exports = {
+  min_conf
+};
+
+
+// min_conf();
