@@ -190,6 +190,7 @@ function activate(context) {
 		}
 	});
 
+	context.subscriptions.push(createDirStructure);
 	context.subscriptions.push(createMinConfig);
 	context.subscriptions.push(compileWithMunge);
 	context.subscriptions.push(createVisualization);
