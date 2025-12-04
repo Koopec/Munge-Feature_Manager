@@ -167,6 +167,29 @@ function activate(context) {
 		}
 	});
 
+	const createDirStructure = vscode.commands.registerCommand('munge-feature-manager.createDirStruct', async function () {
+		const mungeDirectory = path.join(currentDirectory, 'munge');
+
+		if (!fs.existsSync(mungeDirectory)) {
+			fs.mkdirSync(mungeDirectory);
+		}
+		const modelDirectory = path.join(currentDirectory, 'model');
+
+		if (!fs.existsSync(modelDirectory)) {
+			fs.mkdirSync(modelDirectory);
+		}
+		const configsDirectory = path.join(currentDirectory, 'configs');
+
+		if (!fs.existsSync(configsDirectory)) {
+			fs.mkdirSync(configsDirectory);
+		}
+		const srcDirectory = path.join(currentDirectory, 'src');
+
+		if (!fs.existsSync(srcDirectory)) {
+			fs.mkdirSync(srcDirectory);
+		}
+	});
+
 	context.subscriptions.push(createMinConfig);
 	context.subscriptions.push(compileWithMunge);
 	context.subscriptions.push(createVisualization);

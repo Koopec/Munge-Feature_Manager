@@ -27,6 +27,10 @@
       {
         "command": "munge-feature-manager.createMinConfig",
         "title": "Create minimal config"
+      },
+      {
+        "command": "munge-feature-manager.createDirStruct",
+        "title": "Create directory structure"
       }
     ],
     "keybindings": [
@@ -41,6 +45,10 @@
       {
         "command": "munge-feature-manager.createMinConfig",
         "key": "ctrl+shift+q"
+      },
+      {
+        "command": "munge-feature-manager.createDirStruct",
+        "key": "ctrl+shift+u"
       }
     ]
   },
