@@ -1,65 +1,29 @@
-# munge-feature-manager README
+# Munge feature manager
 
-This is the README for your extension "munge-feature-manager". After writing up a brief description, we recommend including the following sections.
+Munge is a lightweight preprocessor for Java which allows for conditional compilation and aims at producing human-readable source code by preserving comments and formatting.
+This extension enables users to create, edit and manage Munge configurations directly within Visual Studio Code.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+1. Translates a configuration to a command in order to compile Java files with Munge and execute it.
+2. Finds the minimal config from the model.
+3. Config validation against the model.
+4. Adds commands/shortcuts to compile with Munge, create a visualization of the model and create a minimal config from the model.
 
-For example if there is an image subfolder under your extension project workspace:
+## Usage
 
-\!\[feature X\]\(images/feature-x.png\)
+The extension can be executed from the source code by pressing `F5` from within the file `extension.js` which will open a new Visual Studio Code window.
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+The commands below can be executed from the command pallette (`Ctrl+shift+P`) with their respective key combinations/shortcuts:
+"Compile with Munge" (`Ctrl+shift+M`): compiles the current Java source file with Munge.
+"Create visualization" (`Ctrl+shift+D`): creates a visualization from the model.
+"Create minimal config" (`Ctrl+shift+Q`): creates a minimal configuration from the model.
 
-## Requirements
+Upon failure, due to missing files or compilation errors, a notification will be shown in Visual Studio Code with the failure message.
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+## Development
 
-## Extension Settings
+`vsc-extension-quickstart.md` contains an explanation on the development process and links to the documentation of Visual Studio Code.
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+## Dependencies
+`viz.js`
