@@ -29,7 +29,7 @@ function explodeArrayObjects(arr) {
 function buildFeatureTree(node) {
 
   if (node.feature) {
-    return { name: node.$.name, type: "feature" };
+    return { name: node.$.name, mandatory: node.$.mandatory === "true",type: "feature" };
   }
 
   if (node.and) {
@@ -38,7 +38,7 @@ function buildFeatureTree(node) {
 
     if (andNode.feature) {
       andNode.feature.forEach(f =>
-        children.push({ name: f.$.name, type: "feature" })
+        children.push({ name: f.$.name, mandatory: f.$.mandatory === "true" ,type: "feature" })
       );
     }
 
@@ -65,11 +65,12 @@ function buildFeatureTree(node) {
       children.push(buildFeatureTree({ opt: [o] }))
     );
     }
-
+    // console.log(children);
+    let mand_children = children.some(child => child.mandatory != undefined && child.mandatory);
     return {
       name: andNode.$.name,
       type: "and",
-      mandatory: andNode.$.mandatory === "true",
+      mandatory: andNode.$.mandatory === "true" || mand_children,
       abstract: andNode.$.abstract === "true",
       hidden: andNode.$.hidden === "true",
       children
@@ -82,7 +83,7 @@ function buildFeatureTree(node) {
 
     if (altNode.feature) {
       altNode.feature.forEach(f =>
-        children.push({ name: f.$.name, type: "feature" })
+        children.push({ name: f.$.name, mandatory: f.$.mandatory === "true",type: "feature" })
       );
     }
 
@@ -109,11 +110,11 @@ function buildFeatureTree(node) {
       children.push(buildFeatureTree({ opt: [o] }))
     );
     }
-
+    let mand_children = children.some(child => child.mandatory != undefined && child.mandatory);
     return {
       name: altNode.$.name,
       type: "alt",
-      mandatory: altNode.$.mandatory === "true",
+      mandatory: altNode.$.mandatory === "true" || mand_children,
       abstract: altNode.$.abstract === "true",
       hidden: altNode.$.hidden === "true",
       children
@@ -126,7 +127,7 @@ function buildFeatureTree(node) {
 
     if (orNode.feature) {
       orNode.feature.forEach(f =>
-        children.push({ name: f.$.name, type: "feature" })
+        children.push({ name: f.$.name, mandatory: f.$.mandatory === "true",type: "feature" })
       );
     }
 
@@ -153,11 +154,11 @@ function buildFeatureTree(node) {
       children.push(buildFeatureTree({ opt: [o] }))
     );
     }
-
+    let mand_children = children.some(child => child.mandatory != undefined && child.mandatory);
     return {
       name: orNode.$.name,
       type: "or",
-      mandatory: orNode.$.mandatory === "true",
+      mandatory: orNode.$.mandatory === "true" || mand_children,
       abstract: orNode.$.abstract === "true",
       hidden: orNode.$.hidden === "true",
       children
@@ -170,7 +171,7 @@ function buildFeatureTree(node) {
 
     if (optNode.feature) {
       optNode.feature.forEach(f =>
-        children.push({ name: f.$.name, type: "feature" })
+        children.push({ name: f.$.name,mandatory: f.$.mandatory === "true", type: "feature" })
       );
     }
 
@@ -197,11 +198,11 @@ function buildFeatureTree(node) {
       children.push(buildFeatureTree({ opt: [o] }))
     );
     }
-
+    let mand_children = children.some(child => child.mandatory != undefined && child.mandatory);
     return {
       name: optNode.$.name,
       type: "opt",
-      mandatory: optNode.$.mandatory === "true",
+      mandatory: optNode.$.mandatory === "true" || mand_children,
       abstract: optNode.$.abstract === "true",
       hidden: optNode.$.hidden === "true",
       children
