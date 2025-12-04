@@ -48,12 +48,10 @@ function activate(context) {
 		}
 		if (stderr) {
 			vscode.window.showErrorMessage(error.message);
-
 			return;
 		}
 		if (stdout) {
 			vscode.window.showInformationMessage(stdout);
-
 		}
 	});
 
@@ -63,7 +61,6 @@ function activate(context) {
 	const compileWithMunge = vscode.commands.registerCommand('munge-feature-manager.compileWithMunge', function () {
 
 		const parser = new xml2js.Parser();
-		console.log(currentDirectory);
 		const model = readXml(currentDirectory, '/configs/config.xml');
 
 		parser.parseStringPromise(model)
@@ -80,10 +77,10 @@ function activate(context) {
 							return;
 						}
 
-						const javaFiles = files.filter(file => file.endsWith('.java')).map(file => `"${path.join(currentDirectory, file)}"`);
+						const javaFilePath = vscode.window.activeTextEditor.document.fileName;
 
-						if (javaFiles.length > 0) {
-							const command = `java Munge -D${featureNames.join(' -D')} ${javaFiles.join(' ')}`
+						if (javaFilePath.endsWith('.java')) {
+							const command = `java Munge -D${featureNames.join(' -D')} "${javaFilePath}"`
 							console.log(command);
 							exec(command, { cwd: extensionPath }, (error, stdout, stderr) => {
 								if (error) {
@@ -96,17 +93,13 @@ function activate(context) {
 								}
 								if (stdout) {
 									const mungeDirectory = path.join(currentDirectory, 'munge');
-
 									if (!fs.existsSync(mungeDirectory)) {
 										fs.mkdirSync(mungeDirectory);
 									}
 
-									const mungePath = path.join(mungeDirectory, 'Main.java');
+									const javaFileName = path.basename(javaFilePath);
+									const mungePath = path.join(mungeDirectory, javaFileName);
 									fs.writeFileSync(mungePath, stdout);
-
-									const terminal = vscode.window.createTerminal('Compile with Munge');
-									terminal.show();
-									terminal.sendText(`cd munge && java Main.java && cd ..`);
 								}
 							});
 						}
@@ -120,13 +113,12 @@ function activate(context) {
 
 	const createVisualization = vscode.commands.registerCommand('munge-feature-manager.createVisualization', async function () {
 		const currentDirectory = vscode.workspace.workspaceFolders[0].uri.fsPath;
-		
 		const editor = vscode.window.activeTextEditor;
 		const filePath = editor.document.uri.fsPath;
 		const fileDir = path.dirname(filePath);
 		const parentDir = path.basename(fileDir);
-		
-		if (parentDir === "model"){
+
+		if (parentDir === "model") {
 			console.log(filePath);
 			await visual_model.visualize(filePath);
 			const uri = vscode.Uri.file(fileDir + "/featureTree.svg");
@@ -135,20 +127,20 @@ function activate(context) {
 				uri,
 				"imagePreview.previewEditor",
 				{ viewColumn: vscode.ViewColumn.Beside }
-    		);
+			);
 		}
-		else if (parentDir === "configs"){
-			console.log(filePath);	
+		else if (parentDir === "configs") {
+			console.log(filePath);
 			await visual_config.visualize(filePath);
 			const uri = vscode.Uri.file(fileDir + "/config.svg");
-			await vscode.commands.executeCommand(	
+			await vscode.commands.executeCommand(
 				"vscode.openWith",
 				uri,
 				"imagePreview.previewEditor",
 				{ viewColumn: vscode.ViewColumn.Beside }
-    		);
+			);
 		}
-		else{
+		else {
 			vscode.window.showErrorMessage("Current file not model or config directory.");
 		}
 	});
@@ -157,10 +149,8 @@ function activate(context) {
 		const editor = vscode.window.activeTextEditor;
 		const filePath = editor.document.uri.fsPath;
 		const fileDir = path.dirname(filePath);
-		const parentDir = path.basename(fileDir);
-		if (filePath === fileDir + "/model.xml"){
+		if (filePath === fileDir + "/model.xml") {
 			await min_config.min_conf(filePath);
-
 		}
 		else {
 			vscode.window.showErrorMessage("Not a model.xml file in the model directory.");
