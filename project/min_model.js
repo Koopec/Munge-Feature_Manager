@@ -46,16 +46,32 @@ function gen_min_config(node, mandatory){
     return [result, selected];
 }
 
-function create_config(features,selected){
+function get_hidden_features(node){
+    let result = [];
+    if (node.hidden){
+        result.push(node.name);
+    }
+    if (node.type === "feature"){
+        return result;
+    }
+    return result.concat(node.children.flatMap(child => get_hidden_features(child)));
+}
+
+function create_config(features,selected,hidden){
     
     let result = "";
+    let hiddens = "";
+
 
     features.forEach(feature => {
+        if (hidden.includes(feature)){
+            hiddens = ' hidden="true"';
+        }
         if (selected.includes(feature)) {
-            result = result + `\t<feature name="${feature}" manual="selected"/>\n`;
+            result = result + `\t<feature name="${feature}" manual="selected"${hiddens}/>\n`;
         }
         else{
-            result = result + `\t<feature name="${feature}" manual="unselected"/>\n`;
+            result = result + `\t<feature name="${feature}" manual="unselected"${hiddens}/>\n`;
         }
     });
     return `<?xml version="1.0" encoding="UTF-8"?>
@@ -105,6 +121,8 @@ async function min_conf(pathf){
     const minimal = gen_min_config(featureTree, false);
     const features = minimal[0];
     let must_features = minimal[1];
+    const hidden = get_hidden_features(featureTree);
+    console.log(hidden);
     if (featureModelXML.featureModel.constraints != undefined){
         const constraints =  featureModelXML.featureModel.constraints[0];
 
@@ -117,7 +135,7 @@ async function min_conf(pathf){
         let new_f = try_val_struct(featureTree, must_features,allSublists(non_must_features));
         must_features = must_features.concat(new_f);
     }
-    const conf = create_config(features, must_features);
+    const conf = create_config(features, must_features,hidden);
     pathf = path.dirname(path.dirname(pathf));
     fs.writeFileSync(pathf +"/configs/config.xml", conf);
 }

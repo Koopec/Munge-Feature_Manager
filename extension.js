@@ -122,46 +122,56 @@ function activate(context) {
 	const createVisualization = vscode.commands.registerCommand('munge-feature-manager.createVisualization', async function () {
 		const currentDirectory = vscode.workspace.workspaceFolders[0].uri.fsPath;
 		const editor = vscode.window.activeTextEditor;
-		const filePath = editor.document.uri.fsPath;
-		const fileDir = path.dirname(filePath);
-		const parentDir = path.basename(fileDir);
+		if (!editor){
+			vscode.window.showErrorMessage("File editor not opened!");
+		}
+		else{
+			const filePath = editor.document.uri.fsPath;
+			const fileDir = path.dirname(filePath);
+			const parentDir = path.basename(fileDir);
 
-		if (parentDir === "model") {
-			console.log(filePath);
-			await visual_model.visualize(filePath);
-			const uri = vscode.Uri.file(fileDir + "/featureTree.svg");
-			await vscode.commands.executeCommand(
-				"vscode.openWith",
-				uri,
-				"imagePreview.previewEditor",
-				{ viewColumn: vscode.ViewColumn.Beside }
-			);
-		}
-		else if (parentDir === "configs") {
-			console.log(filePath);
-			await visual_config.visualize(filePath);
-			const uri = vscode.Uri.file(fileDir + "/config.svg");
-			await vscode.commands.executeCommand(
-				"vscode.openWith",
-				uri,
-				"imagePreview.previewEditor",
-				{ viewColumn: vscode.ViewColumn.Beside }
-			);
-		}
-		else {
-			vscode.window.showErrorMessage("Current file not model or config directory.");
+			if (parentDir === "model") {
+				console.log(filePath);
+				await visual_model.visualize(filePath);
+				const uri = vscode.Uri.file(fileDir + "/featureTree.svg");
+				await vscode.commands.executeCommand(
+					"vscode.openWith",
+					uri,
+					"imagePreview.previewEditor",
+					{ viewColumn: vscode.ViewColumn.Beside }
+				);
+			}
+			else if (parentDir === "configs") {
+				console.log(filePath);
+				await visual_config.visualize(filePath);
+				const uri = vscode.Uri.file(fileDir + "/config.svg");
+				await vscode.commands.executeCommand(
+					"vscode.openWith",
+					uri,
+					"imagePreview.previewEditor",
+					{ viewColumn: vscode.ViewColumn.Beside }
+				);
+			}
+			else {
+				vscode.window.showErrorMessage("Current file not model or config directory.");
+			}
 		}
 	});
 
 	const createMinConfig = vscode.commands.registerCommand('munge-feature-manager.createMinConfig', async function () {
 		const editor = vscode.window.activeTextEditor;
-		const filePath = editor.document.uri.fsPath;
-		const fileDir = path.dirname(filePath);
-		if (filePath === fileDir + "/model.xml") {
-			await min_config.min_conf(filePath);
+		if (!editor){
+			vscode.window.showErrorMessage("File editor not opened!");
 		}
-		else {
-			vscode.window.showErrorMessage("Not a model.xml file in the model directory.");
+		else{
+			const filePath = editor.document.uri.fsPath;
+			const fileDir = path.dirname(filePath);
+			if (filePath === fileDir + "/model.xml") {
+				await min_config.min_conf(filePath);
+			}
+			else {
+				vscode.window.showErrorMessage("Not a model.xml file in the model directory.");
+			}
 		}
 	});
 

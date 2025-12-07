@@ -18,8 +18,9 @@ async function config_to_svg(configXML,path_config,path_model){
   config.forEach((f, i) => {
     const name = f.$.name;
     const manual = f.$.manual;
+    const hidden = f.$.hidden;
 
-    const color = manual === "selected" ? "#8fcd88" : "#e89a9a";
+    const color = manual === "selected" ? "#8fcd88" : hidden === "true" ? "lightgrey" : "#e89a9a";
     const y = 20 + i * (boxHeight + spacing);
     Y = y;
     svgContent += `
