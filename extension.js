@@ -5,6 +5,7 @@ const xml2js = require('xml2js');
 const path = require('path');
 const fs = require('fs');
 const { exec } = require('child_process');
+const parser_js = require('./project/parser.js')
 const visual_model = require('./project/visual_model.js');
 const visual_config = require('./project/visual_config.js');
 const min_config = require('./project/min_model.js');
@@ -82,7 +83,7 @@ function activate(context) {
 						if (javaFilePath.endsWith('.java')) {
 							const command = `java Munge -D${featureNames.join(' -D')} "${javaFilePath}"`
 							console.log(command);
-							exec(command, { cwd: extensionPath }, (error, stdout, stderr) => {
+							exec(command, { cwd: extensionPath }, async (error, stdout, stderr) => {
 								if (error) {
 									vscode.window.showErrorMessage(error.message);
 									return;
@@ -92,14 +93,21 @@ function activate(context) {
 									return;
 								}
 								if (stdout) {
-									const mungeDirectory = path.join(currentDirectory, 'munge');
-									if (!fs.existsSync(mungeDirectory)) {
-										fs.mkdirSync(mungeDirectory);
-									}
+									let valid = await parser_js.validate(currentDirectory + '/configs/config.xml', currentDirectory + '/model/model.xml');
 
-									const javaFileName = path.basename(javaFilePath);
-									const mungePath = path.join(mungeDirectory, javaFileName);
-									fs.writeFileSync(mungePath, stdout);
+									if (valid === "CONFIGURATION IS VALID"){
+										const mungeDirectory = path.join(currentDirectory, 'munge');
+										if (!fs.existsSync(mungeDirectory)) {
+											fs.mkdirSync(mungeDirectory);
+										}
+
+										const javaFileName = path.basename(javaFilePath);
+										const mungePath = path.join(mungeDirectory, javaFileName);
+										fs.writeFileSync(mungePath, stdout);
+									}
+									else{
+										vscode.window.showErrorMessage(valid);
+									}
 								}
 							});
 						}
@@ -168,11 +176,21 @@ function activate(context) {
 		if (!fs.existsSync(modelDirectory)) {
 			fs.mkdirSync(modelDirectory);
 		}
+		if (!fs.existsSync(modelDirectory + '/model.xml')) {
+			fs.writeFile(modelDirectory + '/model.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<featureModel></featureModel>', 
+				(err) => {if (err) vscode.window.showErrorMessage("Cannot write to " + modelDirectory + '/model.xml')});
+		} 
+
 		const configsDirectory = path.join(currentDirectory, 'configs');
 
 		if (!fs.existsSync(configsDirectory)) {
 			fs.mkdirSync(configsDirectory);
 		}
+		if (!fs.existsSync(configsDirectory + '/config.xml')) {
+			fs.writeFile(configsDirectory + '/config.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<configuration></configuration> ', 
+				(err) => { if (err) vscode.window.showErrorMessage("Cannot write to " + modelDirectory + '/config.xml')});
+		}
+
 		const srcDirectory = path.join(currentDirectory, 'src');
 
 		if (!fs.existsSync(srcDirectory)) {
