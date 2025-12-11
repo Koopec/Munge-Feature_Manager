@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <featureModel>
     <struct>
-        <and name="System">
+        <and name="System" mandatory="true">
             <feature name="Core"/>
             <or name="UI">
                 <feature name="DarkMode"/>
@@ -10,7 +10,7 @@
             <opt name="Logging">
                 <feature name="File"/>
                 <feature name="Cloud"/>
-                <alt name="Database">
+                <alt name="Database" abstract="true">
                     <feature name="SQL"/>
                     <feature name="NOSQL"/>
                 </alt>
