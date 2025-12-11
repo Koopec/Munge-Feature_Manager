@@ -42,6 +42,8 @@ The commands below can be executed from the command pallette (`Ctrl+shift+P`) wi
 
 Upon failure, due to missing files or compilation errors, a notification will be shown in Visual Studio Code with the failure message.
 
+After running the preprocessor, the generated files might complain about being in a wrong package, to fix this just reload the window.
+
 ## Development
 This project is fully open-source and any contributions are welcome.
 
