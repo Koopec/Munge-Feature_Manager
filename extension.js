@@ -213,8 +213,11 @@ function activate(context) {
 			fs.mkdirSync(modelDirectory);
 		}
 		if (!fs.existsSync(modelDirectory + '/model.xml')) {
-			fs.writeFile(modelDirectory + '/model.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<featureModel></featureModel>', 
-				(err) => {if (err) vscode.window.showErrorMessage("Cannot write to " + modelDirectory + '/model.xml')});
+			fs.copyFile(extensionPath + '/model.xml', modelDirectory + '/model.xml', (err) => {
+				if (err) {
+					vscode.window.showErrorMessage("Cannot copy file: " + err.message);
+				}
+			});
 		} 
 
 		const configsDirectory = path.join(currentDirectory, 'configs');
