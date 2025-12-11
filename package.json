@@ -21,6 +21,10 @@
         "title": "Compile with Munge"
       },
       {
+        "command": "munge-feature-manager.compileAllWithMunge",
+        "title": "Compile all with Munge"
+      },
+      {
         "command": "munge-feature-manager.createVisualization",
         "title": "Create visualization"
       },
