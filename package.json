@@ -1,7 +1,7 @@
 {
   "name": "munge-feature-manager",
   "displayName": "Munge feature manager",
-  "description": "extension munge",
+  "description": "Extension for the Munge preprocessor for Java, along with feature-model visualization",
   "publisher": "MatejHora",
   "version": "0.0.1",
   "engines": {
@@ -11,10 +11,6 @@
   "categories": [
     "Other"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Koopec/Munge-Feature_Manager"
-  },
   "activationEvents": ["workspaceContains:**/*.java"],
   "main": "./extension.js",
   "contributes": {

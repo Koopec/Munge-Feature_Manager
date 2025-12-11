@@ -101,8 +101,7 @@ function more_constraints(svg,constraints){
   let x = width - 50;
 
   constraints.rule.forEach(constraint =>{
-    // console.log(constraintToText(constraint));
-    svg = svg.replace('</g>\n</svg>',`<text x="${x}" y="${y}" font-size="8" fill="black">${constraintToText(constraint)}</text></g>\n</svg>`);
+    svg = svg.replace('</g>\n</svg>',`<text x="${x}" y="${y}" font-size="10" fill="black">${constraintToText(constraint)}</text></g>\n</svg>`);
     y = y + 10;
   } );
 
@@ -121,15 +120,11 @@ async function visualize(pathf) {
   if (featureModelXML.featureModel.constraints != undefined){
     const constraints = featureModelXML.featureModel.constraints[0];
     svg = more_constraints(svg, constraints);
-    // console.log(constraints.rule.length);
   }
   pathf = path.dirname(pathf);
   fs.writeFileSync(pathf + "/featureTree.svg", svg);
-  // console.log("✅ Enhanced SVG saved as featureTreeEnhanced.svg");
 }
 
 module.exports = {
   visualize
 };
-
-// visualize("model.xml").catch(console.error);

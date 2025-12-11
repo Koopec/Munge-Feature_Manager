@@ -13,10 +13,8 @@ function explodeArrayObjects(arr) {
      Object.entries(obj).forEach(([key, value]) => {
 
       if (Array.isArray(value) && value.length >= 1) {
-      // explode into multiple objects
       value.forEach(v => result.push({ [key]: [v] }));
       } else {
-      // leave unchanged
       result.push(obj);
       }
      })
@@ -65,7 +63,6 @@ function buildFeatureTree(node) {
       children.push(buildFeatureTree({ opt: [o] }))
     );
     }
-    // console.log(children);
     let mand_children = children.some(child => child.mandatory != undefined && child.mandatory);
     return {
       name: andNode.$.name,
@@ -349,7 +346,6 @@ async function validate(path_config, path_model) {
   } else {
      result = "CONFIGURATION IS INVALID";
   }
-  // console.log(result);
   return result;
 }
 
@@ -363,4 +359,3 @@ module.exports = {
   validate
 };
 
-// validate();

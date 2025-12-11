@@ -143,6 +143,3 @@ async function min_conf(pathf){
 module.exports = {
   min_conf
 };
-
-
-// min_conf();
