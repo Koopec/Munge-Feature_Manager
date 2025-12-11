@@ -11,6 +11,16 @@
   "categories": [
     "Other"
   ],
+    "repository": {
+
+
+    "type": "git",
+
+
+    "url": "https://github.com/Koopec/Munge-Feature_Manager"
+
+
+  },
   "activationEvents": ["workspaceContains:**/*.java"],
   "main": "./extension.js",
   "contributes": {
