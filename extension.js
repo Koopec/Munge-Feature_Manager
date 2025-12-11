@@ -81,6 +81,9 @@ function compile(currentDirectory, extensionPath, javaFilePath) {
                             }
                         });
                     }
+					else{
+						vscode.window.showErrorMessage("Not a java file.");
+					}
                 });
             }
         })
