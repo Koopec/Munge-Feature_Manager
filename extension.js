@@ -42,7 +42,7 @@ function compile(currentDirectory, extensionPath, javaFilePath) {
             const selectedFeatures = features.filter(feature => feature.$.manual === 'selected');
             const featureNames = selectedFeatures.map(feature => feature.$.name);
 
-            if (featureNames.length > 0) {
+            if (featureNames.length >= 0) {
 
                 fs.readdir(currentDirectory, (error, files) => {
                     if (error) {

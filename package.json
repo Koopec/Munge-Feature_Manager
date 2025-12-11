@@ -10,9 +10,7 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [
-  "onCommand:munge-feature-manager.compileWithMunge",
-  "onCommand:munge-feature-manager.createVisualization"],
+  "activationEvents": [],
   "main": "./extension.js",
   "contributes": {
     "commands": [
@@ -53,6 +51,10 @@
       {
         "command": "munge-feature-manager.createDirStruct",
         "key": "ctrl+shift+u"
+      },
+      {
+        "command": "munge-feature-manager.compileAllWithMunge",
+        "key": "ctrl+shift+a"
       }
     ]
   },
