@@ -2,7 +2,7 @@
   "name": "munge-feature-manager",
   "displayName": "Munge feature manager",
   "description": "extension munge",
-  "publisher": "us",
+  "publisher": "MatejHora",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.106.0"
@@ -11,6 +11,10 @@
   "categories": [
     "Other"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Koopec/Munge-Feature_Manager"
+  },
   "activationEvents": ["workspaceContains:**/*.java"],
   "main": "./extension.js",
   "contributes": {
