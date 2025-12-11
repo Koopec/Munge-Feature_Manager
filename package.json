@@ -10,7 +10,7 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": ["workspaceContains:**/*.java"],
   "main": "./extension.js",
   "contributes": {
     "commands": [
