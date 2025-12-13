@@ -34,11 +34,11 @@ The configs have a list like structure where, features are either selected or un
 !Right now the extensions assumes the model is in the model directory with file name 'model.xml' and the config in configs directory with 'config.xml' file name!
 
 The commands below can be executed from the command pallette (`Ctrl+shift+P`) with their respective key combinations/shortcuts:
-"Compile with Munge" (`Ctrl+shift+M`): runs the Munge preprocessor on the current Java source file, outputing the result in munge directory.
-"Compile all with Munge" (`Ctrl+shift+A`): runs the Munge preprocessor on all Java source files in the 'src' directory, outputing the results in 'munge' directory.
-"Create visualization" (`Ctrl+shift+D`): creates a visualization from the model.
-"Create minimal config" (`Ctrl+shift+Q`): creates a minimal valid configuration from the model.
-"Create directory structure" (`Ctrl+shift+U`): creates a directory structure needed for the use of the feature manager along with an example model.
+"Compile with Munge" (`Ctrl+shift+M`): runs the Munge preprocessor on the current Java source file, outputing the result in munge directory (Can be pressed on .java files).
+"Compile all with Munge" (`Ctrl+shift+A`): runs the Munge preprocessor on all Java source files in the 'src' directory, outputing the results in 'munge' directory (Can be pressed any time).
+"Create visualization" (`Ctrl+shift+D`): creates a visualization from the model.xml or config.xml, in their corresponding directories (Can be pressed on 'model/model.xml' or 'configs/config.xml').
+"Create minimal config" (`Ctrl+shift+Q`): creates a minimal valid configuration from the model and puts the resulting file in configs directory (Can be pressed on 'model/model.xml').
+"Create directory structure" (`Ctrl+shift+U`): creates a directory structure needed for the use of the feature manager along with an example model (Can be pressed anytime).
 
 Upon failure, due to missing files or compilation errors, a notification will be shown in Visual Studio Code with the failure message.
 
@@ -51,4 +51,4 @@ This project is fully open-source and any contributions are welcome.
 Matej Hora, Michael Schrijer, Thijs van de Griendt
 
 ## Dependencies
-Munge.java is compiled once the extension is activated, so 'javac' is required. For this any JDK should suffice (Extension Pack for Java, reccomended).
+Munge.java is compiled once the extension is activated, so 'javac' is required. For this any JDK should suffice (Extension Pack for Java, reccomended). 
