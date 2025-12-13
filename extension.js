@@ -21,7 +21,7 @@ function readXml(currentDirectory, filename) {
 		if (error.code === 'ENOENT') {
 			vscode.window.showErrorMessage(`${filename} is missing.`);
 		} else {
-			vscode.window.showErrorMessage(error.message);
+			vscode.window.showErrorMessage(error);
 		}
 	}
 	return xml
@@ -56,7 +56,7 @@ function compile(currentDirectory, extensionPath, javaFilePath) {
                                 return;
                             }
                             if (stderr) {
-                                vscode.window.showErrorMessage(error.message);
+                                vscode.window.showErrorMessage(stderr);
                                 return;
                             }
                             if (stdout) {
@@ -85,7 +85,7 @@ function compile(currentDirectory, extensionPath, javaFilePath) {
             }
         })
         .catch(error => {
-            vscode.window.showErrorMessage(error.message);
+            vscode.window.showErrorMessage(error);
         });
 }
 
@@ -104,8 +104,8 @@ function activate(context) {
 			vscode.window.showErrorMessage(error.message);
 			return;
 		}
-		if (stderr) {
-			vscode.window.showErrorMessage(error.message);
+		if (stderr && !stderr.includes("warning")) {
+			vscode.window.showErrorMessage(stderr);
 			return;
 		}
 		if (stdout) {
@@ -214,7 +214,7 @@ function activate(context) {
 		if (!fs.existsSync(modelDirectory + '/model.xml')) {
 			fs.copyFile(extensionPath + '/model.xml', modelDirectory + '/model.xml', (err) => {
 				if (err) {
-					vscode.window.showErrorMessage("Cannot copy file: " + err.message);
+					vscode.window.showErrorMessage("Cannot copy file: " + err);
 				}
 			});
 		} 
