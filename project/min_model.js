@@ -2,7 +2,8 @@ const fs = require("fs");
 const {loadXML, buildFeatureTree, validateConstraints, validateFeatureTree} = require("./parser.js");
 const path = require('path');
 
-
+// generates minimal config from the model recursively
+//  while keeping a list of all features and list of mandatory features
 function gen_min_config(node, mandatory){
 
     let result = [];
@@ -113,6 +114,7 @@ function try_val_struct(tree,must,features){
     return [];
 }
 
+// creates minimal config from model, than constraint and gain validates with model
 async function min_conf(pathf){
 
     const featureModelXML = await loadXML(pathf);

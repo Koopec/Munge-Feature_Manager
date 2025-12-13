@@ -11,9 +11,6 @@ const visual_config = require('./project/visual_config.js');
 const min_config = require('./project/min_model.js');
 
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
-
 function readXml(currentDirectory, filename) {
 	const xmlPath = path.join(currentDirectory, filename);
 	var xml;
@@ -96,8 +93,6 @@ function compile(currentDirectory, extensionPath, javaFilePath) {
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
-
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
 	console.log('Extension "munge-feature-manager" is now active!');
 	const currentDirectory = vscode.workspace.workspaceFolders[0].uri.fsPath;
@@ -125,7 +120,7 @@ function activate(context) {
         const javaFilePath = vscode.window.activeTextEditor.document.fileName;
         compile(currentDirectory, extensionPath, javaFilePath);
     });
-
+	//compiles all java files with munge
     const compileAllWithMunge = vscode.commands.registerCommand('munge-feature-manager.compileAllWithMunge', function () {
         
         const fs = require('fs');
@@ -143,7 +138,7 @@ function activate(context) {
         });
 
 	});
-
+	//creates config or model visualization
 	const createVisualization = vscode.commands.registerCommand('munge-feature-manager.createVisualization', async function () {
 		const currentDirectory = vscode.workspace.workspaceFolders[0].uri.fsPath;
 		const editor = vscode.window.activeTextEditor;
@@ -182,7 +177,7 @@ function activate(context) {
 			}
 		}
 	});
-
+	// creates a minimal valid config from the model
 	const createMinConfig = vscode.commands.registerCommand('munge-feature-manager.createMinConfig', async function () {
 		const editor = vscode.window.activeTextEditor;
 		if (!editor){
@@ -201,6 +196,7 @@ function activate(context) {
 		}
 	});
 
+	// creates default directory structure
 	const createDirStructure = vscode.commands.registerCommand('munge-feature-manager.createDirStruct', async function () {
 		const mungeDirectory = path.join(currentDirectory, 'munge');
 
