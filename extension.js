@@ -30,7 +30,6 @@ function readXml(currentDirectory, filename) {
 function compile(currentDirectory, extensionPath, javaFilePath) {
 
     const parser = new xml2js.Parser();
-    console.log(currentDirectory)
     const model = readXml(currentDirectory, '/configs/config.xml');
 
     parser.parseStringPromise(model)
@@ -40,7 +39,6 @@ function compile(currentDirectory, extensionPath, javaFilePath) {
             const featureNames = selectedFeatures.map(feature => feature.$.name);
 
             if (featureNames.length >= 0) {
-
                 fs.readdir(currentDirectory, (error, files) => {
                     if (error) {
                         vscode.window.showErrorMessage(error.message);
@@ -49,8 +47,7 @@ function compile(currentDirectory, extensionPath, javaFilePath) {
 
                     if (javaFilePath.endsWith('.java')) {
                         const command = `java Munge -D${featureNames.join(' -D')} "${javaFilePath}"`
-                        console.log(command);
-                        exec(command, { cwd: extensionPath }, async (error, stdout, stderr) => {
+                        exec(command, { cwd: extensionPath }, (error, stdout, stderr) => {
                             if (error) {
                                 vscode.window.showErrorMessage(error.message);
                                 return;
@@ -60,21 +57,14 @@ function compile(currentDirectory, extensionPath, javaFilePath) {
                                 return;
                             }
                             if (stdout) {
-                                let valid = await parser_js.validate(currentDirectory + '/configs/config.xml', currentDirectory + '/model/model.xml');
+								const mungeDirectory = path.join(currentDirectory, 'munge');
+								if (!fs.existsSync(mungeDirectory)) {
+									fs.mkdirSync(mungeDirectory);
+								}
 
-                                if (valid === "CONFIGURATION IS VALID"){
-                                    const mungeDirectory = path.join(currentDirectory, 'munge');
-                                    if (!fs.existsSync(mungeDirectory)) {
-                                        fs.mkdirSync(mungeDirectory);
-                                    }
-
-                                    const javaFileName = path.basename(javaFilePath);
-                                    const mungePath = path.join(mungeDirectory, javaFileName);
-                                    fs.writeFileSync(mungePath, stdout);
-                                }
-                                else{
-                                    vscode.window.showErrorMessage(valid);
-                                }
+								const javaFileName = path.basename(javaFilePath);
+								const mungePath = path.join(mungeDirectory, javaFileName);
+								fs.writeFileSync(mungePath, stdout);
                             }
                         });
                     }
@@ -116,27 +106,33 @@ function activate(context) {
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with  registerCommand
 	// The commandId parameter must match the command field in package.json
-	const compileWithMunge = vscode.commands.registerCommand('munge-feature-manager.compileWithMunge', function () {
+	const compileWithMunge = vscode.commands.registerCommand('munge-feature-manager.compileWithMunge', async function () {
+		let valid = await parser_js.validate(currentDirectory + '/configs/config.xml', currentDirectory + '/model/model.xml');
         const javaFilePath = vscode.window.activeTextEditor.document.fileName;
-        compile(currentDirectory, extensionPath, javaFilePath);
+		if (valid === "CONFIGURATION IS VALID"){
+        	compile(currentDirectory, extensionPath, javaFilePath);
+		}
+		else{
+			 vscode.window.showErrorMessage(valid);
+		}
     });
 	//compiles all java files with munge
-    const compileAllWithMunge = vscode.commands.registerCommand('munge-feature-manager.compileAllWithMunge', function () {
-        
-        const fs = require('fs');
-    
-        fs.readdir(currentDirectory + "/src", (err, files) => {
-          if (err) {
-            return console.error('Unable to scan directory:', err);
-          }
-        
-          files.forEach(file => {
-            console.log("Found file:", file);
-            const javaFilePath = currentDirectory + "/src/" + file
-            compile(currentDirectory, extensionPath, javaFilePath)
-          });
-        });
-
+    const compileAllWithMunge = vscode.commands.registerCommand('munge-feature-manager.compileAllWithMunge',async function () {
+		let valid = await parser_js.validate(currentDirectory + '/configs/config.xml', currentDirectory + '/model/model.xml');
+		if (valid === "CONFIGURATION IS VALID"){
+			fs.readdir(currentDirectory + "/src", (err, files) => {
+			if (err) {
+				return console.error('Unable to scan directory:', err);
+			}
+			files.forEach(file => {
+				const javaFilePath = currentDirectory + "/src/" + file;
+				compile(currentDirectory, extensionPath, javaFilePath);
+			});
+			});
+		}
+		else{
+			 vscode.window.showErrorMessage(valid);
+		}
 	});
 	//creates config or model visualization
 	const createVisualization = vscode.commands.registerCommand('munge-feature-manager.createVisualization', async function () {
@@ -151,7 +147,6 @@ function activate(context) {
 			const parentDir = path.basename(fileDir);
 
 			if (parentDir === "model") {
-				console.log(filePath);
 				await visual_model.visualize(filePath);
 				const uri = vscode.Uri.file(fileDir + "/featureTree.svg");
 				await vscode.commands.executeCommand(
@@ -162,7 +157,6 @@ function activate(context) {
 				);
 			}
 			else if (parentDir === "configs") {
-				console.log(filePath);
 				await visual_config.visualize(filePath);
 				const uri = vscode.Uri.file(fileDir + "/config.svg");
 				await vscode.commands.executeCommand(
@@ -193,7 +187,6 @@ function activate(context) {
 				}
 			}
 			else {
-                console.log(filePath)
 				vscode.window.showErrorMessage("Not a model.xml file in the model directory.");
 			}
 		}

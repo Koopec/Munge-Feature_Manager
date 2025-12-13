@@ -3,7 +3,7 @@
   "displayName": "Munge feature manager",
   "description": "Extension for the Munge preprocessor for Java, along with feature-model visualization",
   "publisher": "MatejHora",
-  "version": "0.0.5",
+  "version": "0.0.7",
   "engines": {
     "vscode": "^1.106.0"
   },
