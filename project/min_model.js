@@ -124,7 +124,6 @@ async function min_conf(pathf){
     const features = minimal[0];
     let must_features = minimal[1];
     const hidden = get_hidden_features(featureTree);
-    console.log(hidden);
     if (featureModelXML.featureModel.constraints != undefined){
         const constraints =  featureModelXML.featureModel.constraints[0];
 
@@ -140,6 +139,25 @@ async function min_conf(pathf){
     const conf = create_config(features, must_features,hidden);
     pathf = path.dirname(path.dirname(pathf));
     fs.writeFileSync(pathf +"/configs/config.xml", conf);
+
+    // check if the resulting config is valid
+    let selected_features = new Set(must_features);
+    const structureValid = validateFeatureTree(featureTree, selected_features);
+    let constraintsValid = true;
+    if (featureModelXML.featureModel.constraints != undefined){ 
+        const constraints =  featureModelXML.featureModel.constraints[0];
+        constraintsValid = validateConstraints(constraints, selected_features);
+    }
+         
+    let result;
+    if (structureValid && constraintsValid) {
+        result = "CONFIGURATION IS VALID";
+    } else {
+        result = "CONFIGURATION IS INVALID";
+    }
+    return result;
+
+
 }
 
 module.exports = {

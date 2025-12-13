@@ -187,7 +187,10 @@ function activate(context) {
 			const filePath = editor.document.uri.fsPath;
 			const fileDir = path.dirname(filePath);
 			if (filePath === fileDir + "/model.xml") {
-				await min_config.min_conf(filePath);
+				const valid = await min_config.min_conf(filePath);
+				if (valid === "CONFIGURATION IS INVALID"){
+					vscode.window.showWarningMessage("CANNOT GENERATE VALID CONFIGURATION!");
+				}
 			}
 			else {
                 console.log(filePath)
