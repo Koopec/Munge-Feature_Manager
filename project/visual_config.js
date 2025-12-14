@@ -1,3 +1,5 @@
+// This module handles the logic of visualizing a configuration as an SVG.
+
 const fs = require("fs");
 const { loadXML, validate } = require("./parser.js");
 const path = require('path');

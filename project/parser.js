@@ -1,3 +1,5 @@
+// This module handles the logic of parsing and validating feature trees.
+
 const fs = require("fs");
 const { parseStringPromise } = require("xml2js");
 

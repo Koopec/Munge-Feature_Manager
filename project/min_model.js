@@ -1,3 +1,5 @@
+// This module handles the logic of extracting a minimal configuration of a feature model
+
 const fs = require("fs");
 const {loadXML, buildFeatureTree, validateConstraints, validateFeatureTree} = require("./parser.js");
 const path = require('path');

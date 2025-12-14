@@ -1,3 +1,5 @@
+// This module handles the logic of visualizing a feature model as an SVG using Graphviz.
+
 const fs = require("fs");
 const Viz = require("viz.js");
 const { Module, render } = require("viz.js/full.render.js");
