@@ -87,9 +87,8 @@ function constraintToText(expr) {
   return "";
 }
 
-
+// Appends textual representations of constraints to an existing SVG
 function more_constraints(svg,constraints){
-
 
   const widthMatch = svg.match(/width="(\d+(?:\.\d+)?)pt"/);
   const width = widthMatch ? parseFloat(widthMatch[1]) : null;
@@ -108,6 +107,7 @@ function more_constraints(svg,constraints){
   return svg;
 }
 
+// Loads the feature model, generates a DOT graph, renders it as SVG and appends constraints.
 async function visualize(pathf) {
   const featureModelXML = await loadXML(pathf);
   const featureTree = buildFeatureTree(featureModelXML.featureModel.struct[0]);

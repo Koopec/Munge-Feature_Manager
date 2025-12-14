@@ -23,7 +23,7 @@ function explodeArrayObjects(arr) {
   return result;
 } 
 
-
+// Recursively constructs a feature tree representation from the parsed XML model
 function buildFeatureTree(node) {
 
   if (node.feature) {
@@ -209,6 +209,7 @@ function buildFeatureTree(node) {
   return null;
 }
 
+// Extracts the selected features from a configuration file
 function getSelectedFeatures(config) {
   const selected = new Set();
   config.configuration.feature.forEach(f => {
@@ -219,6 +220,7 @@ function getSelectedFeatures(config) {
   return selected;
 }
 
+// Validates a configuration against the feature tree
 function validateFeatureTree(node, selected) {
 
   if (node.mandatory && !selected.has(node.name)) return false;
@@ -264,7 +266,7 @@ function validateFeatureTree(node, selected) {
          node.children.every(child => !selected.has(child.name));;
 }
 
-// Evaluate a constraint expression recursively
+// Recursively evaluates a constraint expression
 function evalExpr(expr, selected) {
 
   // VARIABLE
@@ -321,9 +323,7 @@ function validateConstraints(constraints, selected) {
   });
 }
 
-/**
- * Run validation process
- */
+// Loads model and configuration files, builds the feature tree and validates constraints
 async function validate(path_config, path_model) {
   const featureModelXML = await loadXML(path_model);
   const configXML = await loadXML(path_config);

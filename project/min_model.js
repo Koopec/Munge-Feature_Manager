@@ -2,7 +2,7 @@ const fs = require("fs");
 const {loadXML, buildFeatureTree, validateConstraints, validateFeatureTree} = require("./parser.js");
 const path = require('path');
 
-// generates minimal config from the model recursively
+// Recursively generates minimal config from the model
 //  while keeping a list of all features and list of mandatory features
 function gen_min_config(node, mandatory){
 
@@ -47,6 +47,7 @@ function gen_min_config(node, mandatory){
     return [result, selected];
 }
 
+// Collects all hidden features from the feature tree
 function get_hidden_features(node){
     let result = [];
     if (node.hidden){
@@ -58,6 +59,7 @@ function get_hidden_features(node){
     return result.concat(node.children.flatMap(child => get_hidden_features(child)));
 }
 
+// Creates an XML configuration from the given feature lists
 function create_config(features,selected,hidden){
     
     let result = "";
@@ -114,12 +116,14 @@ function try_val_struct(tree,must,features){
     return [];
 }
 
-// creates minimal config from model, than constraint and gain validates with model
+// generates a minimal valid configuration from a feature model
 async function min_conf(pathf){
 
     const featureModelXML = await loadXML(pathf);
+    // parsing XML and building the feature tree
     const featureTree = buildFeatureTree(featureModelXML.featureModel.struct[0]);
 
+    // generating an initial minimal configuration
     const minimal = gen_min_config(featureTree, false);
     const features = minimal[0];
     let must_features = minimal[1];
@@ -140,7 +144,7 @@ async function min_conf(pathf){
     pathf = path.dirname(path.dirname(pathf));
     fs.writeFileSync(pathf +"/configs/config.xml", conf);
 
-    // check if the resulting config is valid
+    // validating and extending the model using constraints
     let selected_features = new Set(must_features);
     const structureValid = validateFeatureTree(featureTree, selected_features);
     let constraintsValid = true;

@@ -2,7 +2,7 @@ const fs = require("fs");
 const { loadXML, validate } = require("./parser.js");
 const path = require('path');
 
-
+// Generates an SVG representation of a configuration.
 async function config_to_svg(configXML,path_config,path_model){
 
   const config = configXML.configuration.feature;
@@ -14,6 +14,7 @@ async function config_to_svg(configXML,path_config,path_model){
   
   let Y=0;
 
+  // Determine feature color based on being selected or hidden
   let svgContent = "";
   config.forEach((f, i) => {
     const name = f.$.name;
@@ -32,6 +33,7 @@ async function config_to_svg(configXML,path_config,path_model){
     `;
   });
 
+  // Validate configuration against the feature model
   const validated = await validate(path_config, path_model);
 
   let color = "green";
@@ -39,6 +41,7 @@ async function config_to_svg(configXML,path_config,path_model){
     color = "red";
   }
 
+  // Final SVG including features and validation result
   const svg = `
   <svg xmlns="http://www.w3.org/2000/svg" width="300" height="${config.length * 75}">
   <rect width="100%" height="100%" fill="#f0f0f0"/>
@@ -57,6 +60,7 @@ async function config_to_svg(configXML,path_config,path_model){
 
 }
 
+// Loads the configuration, resolves the model path and generates the SVG
 async function visualize(pathf) {
   const configXML = await loadXML(pathf);
   const model_path = path.dirname(path.dirname(pathf)) + "/model/model.xml";
